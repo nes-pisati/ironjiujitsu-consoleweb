@@ -1,0 +1,42 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local env files
+.env
+.env.*.local
+
+# IDE specific files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Optional: Vite cache
+.vite/
+
+# Optional: TypeScript cache
+*.tsbuildinfo
+
+# Optional: MacOS trash folder
+.Trashes
+
+# Optional: Dependency snapshot
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
