@@ -44,7 +44,7 @@ export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) =>
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post(`${apiUrl}/athlete/create`, athlete);
+            const response = await axios.post(`${apiUrl}/athlete/post`, athlete);
             const newAthlete: Athlete = response.data;
             setAthletes((prev) => [...prev, newAthlete]);
         } catch (error) {
