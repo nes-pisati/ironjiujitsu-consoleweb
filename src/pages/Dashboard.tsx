@@ -1,23 +1,28 @@
 import React, { useEffect } from "react";
 import { useAthleteContext } from "../context/AthleteContext";
 import DashResumeCard from "../components/ui-components/dashboard/DashResumeCard";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCreditCard, faUser } from "@fortawesome/free-solid-svg-icons";
+import PageTitle from "../components/ui-components/PageTitle";
+import { useSubscriptionContext } from "../context/SubscriptionsContext";
 
 export default function Dashboard() {
 
     const { athletes } = useAthleteContext();
+    const { subscriptions } = useSubscriptionContext();
 
     useEffect(() => {
         console.log("athletes ->", athletes);
     })
 
+    //GET ABBONAMENTI SCADUTI
+
     return (
         <>
             <div className="pe-12">
-                <h1 className="text-6xl py-7 font-bold">Dashboard</h1>
-                <p className="text-3xl text-gray-500">Panoramica generale</p>
+                <PageTitle title="Dashboard" subtitle="Panoramica generale" btnVisible={false}/>
                 <div className="py-7 grid grid-cols-4 gap-5">
                     <DashResumeCard title="Atleti" icon={faUser} subtitle="Numero totale di atleti iscritti" count={athletes.length}/>
+                    <DashResumeCard title="Abbonamenti" icon={faCreditCard} subtitle="Sei scaduti da rinnovare" count={subscriptions.length}/>
                 </div>
                 <div>
                     <div></div>

@@ -1,7 +1,6 @@
-import React from "react";
 import SidebarCard, { type SidebarProps } from "./SidebarCard";
 import { faUsers, faCreditCard, faChartSimple } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+
 
 export default function Sidebar() {
 
@@ -13,7 +12,7 @@ export default function Sidebar() {
 
     return (
         <>
-        <div className="min-h-screen py-25 flex flex-col items-center gap-4 w-100 ">
+        <div className="min-h-screen py-25 flex flex-col items-center gap-4 w-60">
             {sidebarEl.map(el => 
                 <SidebarCard icon={el.icon} label={el.label} navigateTo={el.navigateTo}/>
             )}

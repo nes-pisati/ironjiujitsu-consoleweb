@@ -92,7 +92,7 @@ function Field<T>({ config, value, error, onChange, className = '' }: FieldProps
   };
 
   const baseInputClasses = `
-    w-full p-4 border rounded-xl text-xl text-gray-500 
+    w-full p-3 border rounded-xl text-sm text-gray-500 
     ${error ? 'border-red-500' : 'border-gray-300'}
   `;
 
@@ -142,7 +142,7 @@ function Field<T>({ config, value, error, onChange, className = '' }: FieldProps
 
   return (
     <div className={`mb-4 ${className}`}>
-      <label className="block text-xl font-medium text-gray-700 mb-3">
+      <label className="block text-base pb-1 font-medium text-gray-700 mb-1">
         {config.label}
         {config.required && <span className="text-black ml-1">*</span>}
       </label>
@@ -194,9 +194,9 @@ export function ModularForm<T extends Record<string, any>>({
           type="button"
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="w-full bg-black text-white text-xl font-semibold py-4 px-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-8 hover:cursor-pointer"
+          className="w-full bg-black text-white text-base font-semibold py-4 px-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-8 hover:cursor-pointer"
         >
-          <FontAwesomeIcon icon={faSave} size='lg'/>
+          <FontAwesomeIcon icon={faSave} size='sm'/>
           {isSubmitting ? 'Invio...' : submitLabel}
         </button>
       </div>

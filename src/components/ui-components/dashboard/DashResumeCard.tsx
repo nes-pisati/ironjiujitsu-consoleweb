@@ -1,6 +1,5 @@
-import { faCoffee, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { type IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
 
 export interface DashResumeCardProps {
     title: string,
@@ -11,16 +10,16 @@ export interface DashResumeCardProps {
 
 export default function DashResumeCard(props: DashResumeCardProps) { 
     return (
-        <div className="w-auto rounded-2xl h-60 border border-gray-300 p-10">
+        <div className="w-auto rounded-2xl h-60 border border-gray-300 p-10 flex flex-col justify-between">
             <div className="pb-10">
                 <div className="flex items-center justify-between">
-                    <p className="text-2xl font-semibold">{props.title}</p>
+                    <p className="text-xl font-semibold">{props.title}</p>
                     <FontAwesomeIcon icon={props.icon} size="lg"/>
                 </div>
-                <p className="text-gray-500 text-xl">{props.subtitle}</p>
+                <p className="text-gray-500 text-l pt-2">{props.subtitle}</p>
             </div>
             <div>
-                <p className="text-5xl">{props.count}</p>
+                <p className="text-4xl font-semibold">{props.count}</p>
             </div>
         </div>
     )
