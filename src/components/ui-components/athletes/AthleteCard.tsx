@@ -2,6 +2,9 @@ import { faCheck, faEnvelope, faEye, faPhone, faXmarkCircle, type IconDefinition
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { AdultBelts, Athlete, KidsBelts } from "../../../types";
 import { useNavigate } from "react-router-dom";
+import StateLabel from "../label/StateLabel";
+import { useSubscriptionContext } from "../../../context/SubscriptionsContext";
+import { useState, useEffect } from "react";
 
 
 
@@ -12,6 +15,18 @@ export default function AthleteCard(props: Athlete) {
     const handleNavigate = (uid: string) => {
         navigate(`/athlete/${uid}`)
     }
+
+    const { getLastSubscriptionByAthlete } = useSubscriptionContext();
+
+    const [expDate, setExpDate] = useState<Date | null>(null);
+
+    useEffect(() => {
+      const fetchDate = async () => {
+        const date = await getSubscriptionExpDate(props._id);
+        setExpDate(date);
+      };
+      fetchDate();
+    }, [props._id]);
 
     type AllBelts = AdultBelts | KidsBelts;
 
@@ -89,6 +104,14 @@ export default function AthleteCard(props: Athlete) {
         return age.toString()
     }
 
+    const getSubscriptionExpDate = async (athleteId: string) => {
+        const subscription = await getLastSubscriptionByAthlete(athleteId);
+        if(subscription) {
+            return new Date(subscription.subscriptionExp)
+        }
+
+        return null
+    }
 
     return (
         <div className="w-auto h-auto rounded-2xl border border-gray-300 p-10">
@@ -124,24 +147,23 @@ export default function AthleteCard(props: Athlete) {
             <div>
                 <div className="flex items-center justify-between py-5">
                     <p className="text-base text-gray-500">Abbonamento</p>
-                    <div className="flex items-center gap-2 bg-black px-2 py-1 rounded-xl">
-                        <FontAwesomeIcon icon={faCheck} size="xs" color="white" />
-                        <p className="text-xs text-white">attivo</p>
-                    </div>
+                     <StateLabel date={expDate}/>
                 </div>
                 <div className="flex items-center justify-between pb-5">
                     <p className="text-base text-gray-500">Certificato medico</p>
-                    <div className="flex items-center gap-2 bg-yellow-500 px-2 py-1 rounded-xl">
+                    {/* <div className="flex items-center gap-2 bg-yellow-500 px-2 py-1 rounded-xl">
                         <FontAwesomeIcon icon={faXmarkCircle} size="xs" color="white" />
                         <p className="text-xs text-white">assente</p>
-                    </div>
+                    </div> */}
+                    <StateLabel date={props.medicalCertificateExp}/>
                 </div>
                 <div className="flex items-center justify-between">
                     <p className="text-base text-gray-500">Assicurazione</p>
-                    <div className="flex items-center gap-2 bg-red-500 px-2 py-1 rounded-xl">
+                    {/* <div className="flex items-center gap-2 bg-red-500 px-2 py-1 rounded-xl">
                         <FontAwesomeIcon icon={faXmarkCircle} size="xs" color="white" />
                         <p className="text-xs text-white">scaduta</p>
-                    </div>
+                    </div> */}
+                    <StateLabel date={props.ensuranceExp} feminine={true}/>
                 </div>
             </div>
         </div>

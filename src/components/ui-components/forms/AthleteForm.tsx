@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileMedical, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useAthleteContext } from "../../../context/AthleteContext";
 import { useEffect, useState } from "react";
+import { calculateAge, formatDate, getTypeFromAge } from "../../../utils";
 
 
 interface AthleteFormProps {
@@ -63,6 +64,11 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
     { value: 'adult', label: 'Adulto' },
   ]
 
+  const genderOptions = [
+    { value: 'M', label: 'Maschio' },
+    { value: 'F', label: 'Femmina' },
+  ]
+
   const adultBeltsOptions = [
     { value: 'white', label: 'Bianca' },
     { value: 'blue', label: 'Blu' },
@@ -92,59 +98,38 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
     { value: 'B', label: 'Tipologia B' }
   ]
 
-  const calculateAge = (birthDate: string): number => {
-    if (!birthDate) return 0;
+  // const calculateExpiration = (date: Date): Date => {
+  //   const exp = new Date(date);
+  //   exp.setFullYear(exp.getFullYear() + 1)
+  //   return exp
+  // }
 
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
 
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-
-    return age;
-  };
-
-  const calculateExpiration = (date: Date): Date => {
-    const exp = new Date(date);
-    exp.setFullYear(exp.getFullYear() + 1)
-    return exp
-  }
-
-  const getTypeFromAge = (age: number): string => {
-    return age >= 16 ? 'adult' : 'kids';
-  };
 
   const handleSubmit = async (values: Athlete) => {
 
     try {
       let saved;
-      const medicalExpDate = values.medicalCertificateExp? calculateExpiration(values.medicalCertificateExp) : null;
-      const ensuranceExpDate = calculateExpiration(values.ensuranceExp);
+      // const medicalExpDate = values.medicalCertificateExp ? calculateExpiration(values.medicalCertificateExp) : null;
+      // const ensuranceExpDate = calculateExpiration(values.ensuranceExp);
       let medicalCertificate;
 
-      if(!values.medicalCertificateExp) {
+      if (!values.medicalCertificateExp) {
         medicalCertificate = false;
       } else {
         medicalCertificate = true;
       }
 
       if (isEditMode) {
-        saved = await editAthlete(athleteId!, { 
-          ...values, 
-          medicalCertificateExp: medicalExpDate, 
-          ensuranceExp: ensuranceExpDate, 
-          ensurance: true, 
+        saved = await editAthlete(athleteId!, {
+          ...values,
+          ensurance: true,
           medicalCertificate: medicalCertificate
         });
       } else {
-        saved = await addAthlete({ 
-          ...values, 
-          medicalCertificateExp: medicalExpDate, 
-          ensuranceExp: ensuranceExpDate, 
-          ensurance: true, 
+        saved = await addAthlete({
+          ...values,
+          ensurance: true,
           medicalCertificate: medicalCertificate
         });
       }
@@ -213,12 +198,20 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
                 onChange={handleFieldChange}
               />
             </div>
-            <Field
-              config={fields.find((f: any) => f.name === 'birthDate')}
-              value={values.birthDate}
-              error={errors.birthDate}
-              onChange={handleFieldChange}
-            />
+            <div className="grid grid-cols-2 gap-6">
+              <Field
+                config={fields.find((f: any) => f.name === 'birthDate')}
+                value={values.birthDate}
+                error={errors.birthDate}
+                onChange={handleFieldChange}
+              />
+              <Field
+                config={fields.find((f: any) => f.name === 'gender')}
+                value={values.gender}
+                error={errors.gender}
+                onChange={handleFieldChange}
+              />
+            </div>
             <Field
               config={fields.find((f: any) => f.name === 'fiscalCode')}
               value={values.fiscalCode}
@@ -244,11 +237,11 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
             {!values.type && (
               <div className="mb-4">
-                <label className="block text-xl font-medium text-gray-700 mb-3">
+                <label className="block text-l font-medium text-gray-700 mb-3">
                   Cintura
                   <span className="text-black ml-1">*</span>
                 </label>
-                <div className="w-full text-xl p-4 border border-gray-300 rounded-xl bg-gray-100 text-gray-500">
+                <div className="w-full text-sm p-4 border border-gray-300 rounded-xl bg-gray-100 text-gray-500">
                   Seleziona prima la tipologia
                 </div>
               </div>
@@ -296,7 +289,9 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
               config={fields.find((f: any) => f.name === 'medicalCertificateExp')}
               value={values.medicalCertificateExp}
               error={errors.medicalCertificateExp}
-              onChange={handleFieldChange}
+              onChange={
+                  handleFieldChange
+              }
             />
           </div>
 
@@ -368,6 +363,12 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       }
     },
     {
+      name: 'gender',
+      type: 'select',
+      label: 'Genere',
+      options: genderOptions
+    },
+    {
       name: 'type',
       type: 'select',
       label: 'Tipologia',
@@ -398,24 +399,12 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
         return !phoneRegex.test(value) ? 'Numero di telefono non valido' : undefined;
       }
     },
-    // {
-    //   name: 'medicalCertificate',
-    //   type: 'checkbox', 
-    //   label: 'Certificato Medico',
-    //   required: true
-    // },
     {
       name: 'medicalCertificateExp',
       type: 'date',
       label: 'Data rilascio certificato',
       required: false
     },
-    // {
-    //   name: 'ensurance',
-    //   type: 'checkbox', 
-    //   label: 'Assicurazione',
-    //   required: true
-    // },
     {
       name: 'ensuranceType',
       type: 'select',

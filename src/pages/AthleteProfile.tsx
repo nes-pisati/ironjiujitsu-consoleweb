@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAthleteContext } from "../context/AthleteContext";
-import type { Athlete } from "../types";
+import { type Subscription, type Athlete } from "../types";
 import PageTitle from "../components/ui-components/PageTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faBirthdayCake, faEnvelope, faFileMedical, faIdBadge, faPencil, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faBirthdayCake, faCreditCard, faEnvelope, faIdBadge, faPencil, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
 import AthleteProfileCard from "../components/ui-components/athletes/AthleteProfileCard";
-import { getAthleteAge, getBeltColour, getBeltTranslation } from "../utils";
+import { formatDate, getAthleteAge, getBeltColour, getBeltTranslation } from "../utils";
+import StateLabel from "../components/ui-components/label/StateLabel";
+import { useSubscriptionContext } from "../context/SubscriptionsContext";
 
 export default function AthleteProfile() {
 
   const { id } = useParams();
   const { getAthlete } = useAthleteContext();
+  const { getLastSubscriptionByAthlete } = useSubscriptionContext();
   const [athlete, setAthlete] = useState<Athlete | undefined>(undefined);
+  const [subscription, setSubscription] = useState<Subscription | undefined>(undefined);
 
   const navigate = useNavigate();
 
@@ -31,15 +35,25 @@ export default function AthleteProfile() {
         }
       };
 
+      const fetchSubscription = async () => {
+        const subscriptionData = await getLastSubscriptionByAthlete(id)
+        if (subscriptionData) {
+          console.log("subscription ->", subscriptionData);
+
+          setSubscription(subscriptionData)
+        } 
+      }
+
       fetchAthlete();
+      fetchSubscription();
     }
   }, [id]);
 
-  const formatBirthday = (birthDate: Date): string => {
-    if (!birthDate) return '';
+  const isSubscriptionValid = (subscription: Subscription): boolean => {
+    const expDate = new Date(subscription.subscriptionExp);
+    const now = new Date();
 
-    const date = new Date(birthDate);
-    return date.toLocaleDateString("it-IT")
+    return expDate > now ? true : false
   }
 
   return (
@@ -64,7 +78,7 @@ export default function AthleteProfile() {
                   </div>
                   <div className="flex gap-4 items-center pb-3">
                     <FontAwesomeIcon icon={faBirthdayCake} size="sm" />
-                    <p className="text-base">{formatBirthday(athlete.birthDate)}</p>
+                    <p className="text-base">{formatDate(athlete.birthDate)}</p>
                   </div>
                   <div className="flex gap-4 items-center pb-3">
                     <FontAwesomeIcon icon={faPhone} size="sm" />
@@ -75,26 +89,83 @@ export default function AthleteProfile() {
                     <p className="text-base">{athlete.email}</p>
                   </div>
                 </div>
-                {/* <div className="pt-10">
-                  <button className="border border-gray-40 w-full font-bold text-base py-3 px-6 rounded-xl flex items-center gap-5 bg-black text-white flex justify-center hover:cursor-pointer" onClick={() => handleNavigate(`athlete/edit/${athlete._id}`)}>
-                    <FontAwesomeIcon icon={faPencil} size="sm" color="white" />
-                    Modifica
-                  </button>
-                </div> */}
               </AthleteProfileCard>
-              <AthleteProfileCard title="Abbonamento" icon={faFileMedical} buttonText="Modifica Abbonamento" buttonIcon={faPencil} onButtonClick={() => handleNavigate(`athlete/edit/${athlete._id}`)}>
-                <div className="py-12">
-                  {/* <div className="flex gap-4 items-center pb-5">
-                    <p className="text-base">{athlete.fiscalCode}</p>
-                  </div> */}
-                  <div className="flex gap-4 items-center pb-5">
-                    <FontAwesomeIcon icon={faBirthdayCake} size="sm" />
-                    <p className="text-base">{formatBirthday(athlete.birthDate)}</p>
+              <AthleteProfileCard title="Abbonamento" icon={faCreditCard} buttonText={!subscription ? "Aggiungi abbonamento" : (isSubscriptionValid(subscription) ? "Modifica abbonamento" : "Aggiorna abbonamento")} buttonIcon={faPencil} onButtonClick={() => handleNavigate('subscription/add')}>
+                {subscription &&
+                  <div>
+                    <div className="py-8">
+                      <div className="border-b border-gray-300 pb-6">
+                        <div className="flex justify-between pb-4 border-bottom ">
+                          <p className="font-semibold text-lg">Stato</p>
+                          <StateLabel date={subscription.subscriptionExp} />
+                        </div>
+                        {subscription.subscriptionExp &&
+                          <div className="flex justify-between">
+                            <p className="text-base">Data scadenza:</p>
+                            <p className="text-base">{formatDate(subscription.subscriptionExp)}</p>
+                          </div>
+                        }
+                      </div>
+                      <div className="pt-6">
+                        <div>
+                          <div className="flex justify-between">
+                            <p className="text-base">Tipologia:</p>
+                            <p className="text-base ">{subscription.type}</p>
+                          </div>
+                          <div className="flex justify-between">
+                            <p className="text-base">Prezzo:</p>
+                            <p className="text-base">{subscription.amount} €</p>
+                          </div>
+                          <div className="flex justify-between">
+                            <p className="text-base">Pagamento:</p>
+                            <p className="text-base">{subscription.paymentType}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                }
+
+                {!subscription && 
+                  <div className="mt-30">
+                    <p className="text-base">Nessun abbonamento attivo per l'atleta {athlete.name + ' ' + athlete.surname}</p>
+                  </div>
+                }
+
               </AthleteProfileCard>
               <AthleteProfileCard title="Salute" icon={faStethoscope} buttonText="Aggiorna" buttonIcon={faPencil} onButtonClick={() => handleNavigate(`athlete/edit/${athlete._id}`)}>
-                <div></div>
+                <div>
+                  <div className="py-8">
+                    <div className="border-b border-gray-300 pb-6">
+                      <div className="flex justify-between pb-4 border-bottom ">
+                        <p className="font-semibold text-lg">Certificato Medico</p>
+                        <StateLabel date={athlete.medicalCertificateExp} />
+                      </div>
+                      {athlete.medicalCertificate &&
+                        <div className="flex justify-between">
+                          <p className="text-base">Data scadenza:</p>
+                          <p className="text-base">{formatDate(athlete.medicalCertificateExp!)}</p>
+                        </div>
+                      }
+                    </div>
+                    <div className="pt-6">
+                      <div className="flex justify-between pb-4 border-bottom ">
+                        <p className="font-semibold text-lg">Assicurazione</p>
+                        <StateLabel date={athlete.ensuranceExp} feminine={true} />
+                      </div>
+                      <div>
+                        <div className="flex justify-between">
+                          <p className="text-base">Tipologia:</p>
+                          <p className="text-base ">{athlete.ensuranceType}</p>
+                        </div>
+                        <div className="flex justify-between">
+                          <p className="text-base">Data scadenza:</p>
+                          <p className="text-base">{formatDate(athlete.ensuranceExp!)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </AthleteProfileCard>
             </>
           }
