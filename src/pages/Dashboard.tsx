@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useAthleteContext } from "../context/AthleteContext";
 import DashResumeCard from "../components/ui-components/dashboard/DashResumeCard";
 import { faCreditCard, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -22,7 +22,7 @@ export default function Dashboard() {
                 <PageTitle title="Dashboard" subtitle="Panoramica generale" btnVisible={false}/>
                 <div className="py-7 grid grid-cols-4 gap-5">
                     <DashResumeCard title="Atleti" icon={faUser} subtitle="Numero totale di atleti iscritti" count={athletes.length}/>
-                    <DashResumeCard title="Abbonamenti" icon={faCreditCard} subtitle="Sei scaduti da rinnovare" count={subscriptions.length}/>
+                    <DashResumeCard title="Abbonamenti" icon={faCreditCard} subtitle="Abbonamenti scaduti da rinnovare" count={subscriptions.length}/>
                 </div>
                 <div>
                     <div></div>

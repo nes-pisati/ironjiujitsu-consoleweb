@@ -10,7 +10,7 @@ export interface DashResumeCardProps {
 
 export default function DashResumeCard(props: DashResumeCardProps) { 
     return (
-        <div className="w-auto rounded-2xl h-60 border border-gray-300 p-10 flex flex-col justify-between">
+        <div className="w-auto rounded-2xl h-60 border border-gray-300 p-7 flex flex-col justify-between">
             <div className="pb-10">
                 <div className="flex items-center justify-between">
                     <p className="text-xl font-semibold">{props.title}</p>
