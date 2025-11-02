@@ -9,6 +9,7 @@ import { AthleteProvider } from './context/AthleteContext';
 import AthleteProfile from './pages/AthleteProfile';
 import Subscriptions from './pages/Subscriptions';
 import { SubscriptionProvider } from './context/SubscriptionsContext';
+import AddSubscription from './pages/AddSubscription';
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
               <Route path='/athlete/edit/:id' element={<Layout><AddAthlete /></Layout>} />
               <Route path='/athlete/:id' element={<Layout><AthleteProfile /></Layout>} />
               <Route path='/subscriptions' element={<Layout><Subscriptions /></Layout>} />
+              <Route path='/subscription/add' element={<Layout><AddSubscription /></Layout>}/>
+              <Route path='/subscription/edit/:id' element={<Layout><AddSubscription /></Layout>}/>
             </Routes>
           </BrowserRouter>
         </SubscriptionProvider>

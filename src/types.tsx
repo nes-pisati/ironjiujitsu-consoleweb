@@ -8,7 +8,7 @@ export type AthleteType = 'kid' | 'adult';
 export type SubscriptionType = 'month' | 'quarterly';
 export type PaymentType = 'banktransfer' | 'cash' | 'paypal';
 export type EnsuranceType = 'A' | 'B';
-
+export type GenderType = 'M' | 'F'
 
 type AllBelts = AdultBelts | KidsBelts;
 
@@ -19,6 +19,7 @@ export interface Athlete {
     birthDate: Date,
     fiscalCode: string,
     email: string,
+    gender: GenderType,
     phoneNumber: string,
     type: AthleteType,
     belt: AllBelts,
@@ -38,5 +39,6 @@ export interface Subscription {
     subscriptionExp: Date,
     athleteId: string,
     notes?: string,
-    paymentType: PaymentType
+    paymentType: PaymentType,
+    createdAt: Date
 }
