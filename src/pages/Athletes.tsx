@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PageTitle from "../components/ui-components/PageTitle";
 import AthleteCard from "../components/ui-components/athletes/AthleteCard";
 import { useAthleteContext } from "../context/AthleteContext";
@@ -23,6 +23,27 @@ export default function AthletesList() {
         new Map(mergedBeltOptions.map(option => [option.value, option])).values()
     );
 
+    const filteredAthletes = useMemo(() => {
+        const search = searchAthlete.trim().toLowerCase();
+    
+        return athletes.filter(a => {
+          if (search) {
+            const fullName = `${a.name ?? ''} ${a.surname ?? ''}`.toLowerCase();
+            if (!fullName.includes(search)) return false;
+          }
+    
+          if (typeOption) {
+            if (a.type !== typeOption) return false;
+          }
+    
+          if (beltOption) {
+            if (a.belt !== beltOption) return false;
+          }
+    
+          return true;
+        });
+      }, [athletes, searchAthlete, typeOption, beltOption]);
+
     return (
         <>
             <div className="pe-12">
@@ -30,7 +51,8 @@ export default function AthletesList() {
                     <PageTitle title="Atleti" subtitle="Gestisci i membri della squadra" btnVisible={false} />
                     <button className="bg-black  text-white text-sm font-bold py-4 px-6 rounded-2xl" onClick={() => handleNavigate()}>Aggiungi atleta</button>
                 </div>
-                {/* <div className="pt-10 grid grid-cols-3 gap-4">
+                {/* FILTRI */}
+                <div className="pt-10 grid grid-cols-3 gap-4">
                     <input
                         type="text"
                         placeholder="Inserisci nome atleta..."
@@ -59,7 +81,7 @@ export default function AthletesList() {
                                 {option.label}
                             </option>
                         ))}
-                        {typeOption === 'adult' && kidsBeltsOptions.map(option => (
+                        {typeOption === 'adult' && adultBeltsOptions.map(option => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
@@ -70,9 +92,9 @@ export default function AthletesList() {
                             </option>
                         )}
                     </select>
-                </div> */}
+                </div>
                 <div className="grid grid-cols-3 py-12 gap-6">
-                    {athletes.map((athlete) => (
+                    {filteredAthletes.map((athlete) => (
                         <AthleteCard key={athlete._id} {...athlete} />
                     ))}
                 </div>
