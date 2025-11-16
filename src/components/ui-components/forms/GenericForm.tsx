@@ -92,7 +92,7 @@ function Field<T>({ config, value, error, onChange, className = '' }: FieldProps
   };
 
   const baseInputClasses = `
-    w-full p-3 border rounded-xl text-sm text-gray-500 
+    w-full p-3 border rounded-xl text-sm text-gray-500 focus:border-black focus:border-2 focus:outline-none
     ${error ? 'border-red-500' : 'border-gray-300'}
   `;
 
