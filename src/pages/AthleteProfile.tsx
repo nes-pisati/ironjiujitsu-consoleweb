@@ -6,7 +6,7 @@ import PageTitle from "../components/ui-components/PageTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faBirthdayCake, faCreditCard, faEnvelope, faIdBadge, faPencil, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
 import AthleteProfileCard from "../components/ui-components/athletes/AthleteProfileCard";
-import { formatDate, getAthleteAge, getBeltColour, getBeltTranslation } from "../utils";
+import { formatDate, getAthleteAge, getBeltColour, getBeltTranslation, t } from "../utils";
 import StateLabel from "../components/ui-components/label/StateLabel";
 import { useSubscriptionContext } from "../context/SubscriptionsContext";
 
@@ -110,7 +110,7 @@ export default function AthleteProfile() {
                         <div>
                           <div className="flex justify-between">
                             <p className="text-base">Tipologia:</p>
-                            <p className="text-base ">{subscription.type}</p>
+                            <p className="text-base ">{t(subscription.type)}</p>
                           </div>
                           <div className="flex justify-between">
                             <p className="text-base">Prezzo:</p>
@@ -118,7 +118,7 @@ export default function AthleteProfile() {
                           </div>
                           <div className="flex justify-between">
                             <p className="text-base">Pagamento:</p>
-                            <p className="text-base">{subscription.paymentType}</p>
+                            <p className="text-base">{t(subscription.paymentType)}</p>
                           </div>
                         </div>
                       </div>

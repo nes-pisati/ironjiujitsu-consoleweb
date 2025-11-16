@@ -1,0 +1,8 @@
+{
+    "cash": "contanti",
+    "paypal": "PayPal",
+    "banktransfer": "Bonifico Bancario",
+    "other": "Altro",
+    "month": "Mensile",
+    "quarterly": "Trimestrale"
+}

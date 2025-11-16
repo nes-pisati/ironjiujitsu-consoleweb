@@ -1,6 +1,11 @@
 import type { AdultBelts, Athlete, KidsBelts, Subscription, SubscriptionType } from "../src/types";
+import labels from "../src/assets/labels.json";
 
 type AllBelts = AdultBelts | KidsBelts;
+
+export const t = (label: keyof typeof labels) => {
+    return labels[label] ?? label;
+};
 
 export const getBeltColour = (belt: AllBelts, width: string, height: string): string => { //w-5 h-5 
     const baseClass = 'rounded-4xl';
