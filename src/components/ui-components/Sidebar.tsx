@@ -12,7 +12,7 @@ export default function Sidebar() {
 
     return (
         <>
-        <div className="min-h-screen py-25 flex flex-col items-center gap-4 w-60">
+        <div className="fixed left-0 top-0 h-screen w-60 bg-white shadow-md flex flex-col items-center gap-4 py-20">
             {sidebarEl.map(el => 
                 <SidebarCard icon={el.icon} label={el.label} navigateTo={el.navigateTo}/>
             )}
