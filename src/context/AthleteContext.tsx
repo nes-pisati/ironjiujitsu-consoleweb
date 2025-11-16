@@ -75,7 +75,7 @@ export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) =>
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.put(`${apiUrl}/athlete/update/${id}`, athlete);
+            const response = await axios.put(`${apiUrl}/athlete/edit/${id}`, athlete);
             const updatedAthlete: Athlete = response.data;
             setAthletes((prev) => 
                 prev.map((a) => (a._id === id ? { ...a, ...updatedAthlete } : a))

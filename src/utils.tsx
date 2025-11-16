@@ -81,11 +81,23 @@ export const getAthleteAge = (birthDate: Date): string | undefined => {
     return age.toString()
 }
 
+// return dd-MM-yyyy
 export const formatDate = (date: Date): string => {
     if (!date) return '';
 
     const formattedDate = new Date(date);
     return formattedDate.toLocaleDateString("it-IT")
+}
+
+//return yyyy-MM-dd
+export const formatFieldsDate = (date: string): string => {
+    const d = new Date(date);
+
+    if (isNaN(d.getTime())) {
+        throw new Error("Invalid date");
+    }
+
+    return d.toISOString().split("T")[0]; 
 }
 
 export const calculateAge = (birthDate: string | Date): number => {

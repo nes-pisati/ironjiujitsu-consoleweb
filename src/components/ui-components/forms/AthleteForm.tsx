@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileMedical, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useAthleteContext } from "../../../context/AthleteContext";
 import { useEffect, useState } from "react";
-import { calculateAge, formatDate, getTypeFromAge } from "../../../utils";
+import { calculateAge, formatDate, formatFieldsDate, getTypeFromAge } from "../../../utils";
 import Alert, { type AlertProps } from "../alert/Alert";
 
 
@@ -54,8 +54,11 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       const fetchData = async () => {
         const data = await loadAthleteData(athleteId);
         if (data) {
-          const formattedBirthday = new Date(data.birthDate)
-          setAthleteData({ ...data, birthDate: formattedBirthday });
+          // const formattedBirthday = formatFieldsDate(data.birthDate)
+          // const formattedMedicalCertificateStartDate = formatFieldsDate(data.medicalCertificateReleaseDate);
+          // const formattedEnsuranceStartDate = formatFieldsDate(data.ensuranceStartDate)
+          // setAthleteData({ ...data, birthDate: formattedBirthday, medicalCertificateReleaseDate: formattedMedicalCertificateStartDate, ensuranceStartDate: formattedEnsuranceStartDate });
+          setAthleteData(data)
           setError(null);
         } else {
           setError('Impossibile caricare i dati dell\'atleta');
@@ -120,27 +123,44 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
     try {
       let saved;
-      // const medicalExpDate = values.medicalCertificateExp ? calculateExpiration(values.medicalCertificateExp) : null;
-      // const ensuranceExpDate = calculateExpiration(values.ensuranceExp);
       let medicalCertificate;
+      let email;
 
-      if (!values.medicalCertificateExp) {
+      if (!values.medicalCertificateReleaseDate) {
         medicalCertificate = false;
       } else {
         medicalCertificate = true;
       }
 
-      if (isEditMode) {
-        saved = await editAthlete(athleteId!, {
-          ...values,
-          ensurance: true,
-          medicalCertificate: medicalCertificate
-        });
+      if (!values.email) {
+        email = ""
       } else {
+        email = values.email
+      }
+
+      const formattedBirthDay = formatFieldsDate(values.birthDate);
+      const formattedMedicalCertificateStartDate = values.medicalCertificateReleaseDate ? formatFieldsDate(values.medicalCertificateReleaseDate) : null
+      const formattedEnsuranceStartDate = formatFieldsDate(values.ensuranceStartDate)
+
+      if (isEditMode) {
+        const { ensuranceExp, medicalCertificateExp, ...rest } = values;
+      
+        saved = await editAthlete(athleteId!, {
+          ...rest,
+          birthDate: formattedBirthDay,
+          ensurance: true,
+          ensuranceStartDate: formattedEnsuranceStartDate,
+          medicalCertificate: medicalCertificate,
+          medicalCertificateReleaseDate: formattedMedicalCertificateStartDate,
+          email: email
+        });
+      }
+      else {
         saved = await addAthlete({
           ...values,
           ensurance: true,
-          medicalCertificate: medicalCertificate
+          medicalCertificate: medicalCertificate,
+          email: email
         });
       }
 
@@ -169,6 +189,10 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
   };
 
   const TwoColumnLayout = ({ fields, values, errors, updateValue, Field }: any) => {
+
+    useEffect(() => {
+      console.log("Values ->", values);
+    }, [values])
 
     const getBeltOptions = () => {
       if (values.type === 'kids') {
@@ -231,7 +255,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
             <div className="grid grid-cols-2 gap-6">
               <Field
                 config={fields.find((f: any) => f.name === 'birthDate')}
-                value={values.birthDate}
+                value={isEditMode ? formatFieldsDate(values.birthDate) : values.birthDate}
                 error={errors.birthDate}
                 onChange={handleFieldChange}
               />
@@ -309,18 +333,12 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
               </div>
               <p className="text-md text-gray-400">Registrazione del certificato</p>
             </div>
-            {/* <Field
-              config={fields.find((f: any) => f.name === 'medicalCertificate')}
-              value={values.medicalCertificate}
-              error={errors.medicalCertificate}
-              onChange={handleFieldChange}
-            /> */}
             <Field
-              config={fields.find((f: any) => f.name === 'medicalCertificateExp')}
-              value={values.medicalCertificateExp}
-              error={errors.medicalCertificateExp}
+              config={fields.find((f: any) => f.name === 'medicalCertificateReleaseDate')}
+              value={isEditMode ? formatFieldsDate(values.medicalCertificateReleaseDate) : values.medicalCertificateReleaseDate}
+              error={errors.medicalCertificateReleaseDate}
               onChange={
-                  handleFieldChange
+                handleFieldChange
               }
             />
           </div>
@@ -333,12 +351,6 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
               </div>
               <p className="text-md text-gray-400">Inserimento assicurazione</p>
             </div>
-            {/* <Field
-              config={fields.find((f: any) => f.name === 'ensurance')}
-              value={values.medicalCertificate}
-              error={errors.medicalCertificate}
-              onChange={handleFieldChange}
-            /> */}
             <Field
               config={fields.find((f: any) => f.name === 'ensuranceType')}
               value={values.ensuranceType}
@@ -346,18 +358,18 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
               onChange={handleFieldChange}
             />
             <Field
-              config={fields.find((f: any) => f.name === 'ensuranceExp')}
-              value={values.ensuranceExp}
-              error={errors.ensuranceExp}
+              config={fields.find((f: any) => f.name === 'ensuranceStartDate')}
+              value = {isEditMode ? formatFieldsDate(values.ensuranceStartDate) : values.ensuranceStartDate}
+              error={errors.ensuranceStartDate}
               onChange={handleFieldChange}
             />
 
           </div>
         </div>
         {
-          alert.showAlert && <Alert title={alert.infos.title} subtitle={alert.infos.subtitle} isError={alert.infos.isError} path={alert.infos.path}/>
+          alert.showAlert && <Alert title={alert.infos.title} subtitle={alert.infos.subtitle} isError={alert.infos.isError} path={alert.infos.path} />
         }
-        
+
       </>
     );
   };
@@ -420,7 +432,6 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       name: 'email',
       type: 'email',
       label: 'Email',
-      required: true,
       validation: (value) => !/\S+@\S+\.\S+/.test(value) ? 'Email non valida' : undefined
     },
     {
@@ -434,7 +445,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       }
     },
     {
-      name: 'medicalCertificateExp',
+      name: 'medicalCertificateReleaseDate',
       type: 'date',
       label: 'Data rilascio certificato',
       required: false
@@ -447,7 +458,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       options: ensuranceOptions
     },
     {
-      name: 'ensuranceExp',
+      name: 'ensuranceStartDate',
       type: 'date',
       label: 'Data attivazione assicurazione',
       required: true

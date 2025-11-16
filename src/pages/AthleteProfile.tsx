@@ -4,19 +4,32 @@ import { useAthleteContext } from "../context/AthleteContext";
 import { type Subscription, type Athlete } from "../types";
 import PageTitle from "../components/ui-components/PageTitle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faBirthdayCake, faCreditCard, faEnvelope, faIdBadge, faPencil, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faBirthdayCake, faCreditCard, faEnvelope, faIdBadge, faPencil, faPhone, faStethoscope, faTractor, faTrash, faUser } from "@fortawesome/free-solid-svg-icons";
 import AthleteProfileCard from "../components/ui-components/athletes/AthleteProfileCard";
 import { formatDate, getAthleteAge, getBeltColour, getBeltTranslation, t } from "../utils";
 import StateLabel from "../components/ui-components/label/StateLabel";
 import { useSubscriptionContext } from "../context/SubscriptionsContext";
+import AlertDialog from "../components/ui-components/dialog-alert/DialogAlert";
+
+type AlertDialogProps = {
+  title: string,
+  subtitle: string,
+  isDeleted: boolean
+}
 
 export default function AthleteProfile() {
 
   const { id } = useParams();
-  const { getAthlete } = useAthleteContext();
+  const { getAthlete, deleteAthlete } = useAthleteContext();
   const { getLastSubscriptionByAthlete } = useSubscriptionContext();
   const [athlete, setAthlete] = useState<Athlete | undefined>(undefined);
   const [subscription, setSubscription] = useState<Subscription | undefined>(undefined);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [alertProps, setAlertProps] = useState<AlertDialogProps>({
+    title: "Sei sicuro di voler eliminare l'atleta?",
+    subtitle: "Premi conferma per continuare",
+    isDeleted: false
+  })
 
   const navigate = useNavigate();
 
@@ -41,7 +54,7 @@ export default function AthleteProfile() {
           console.log("subscription ->", subscriptionData);
 
           setSubscription(subscriptionData)
-        } 
+        }
       }
 
       fetchAthlete();
@@ -54,6 +67,24 @@ export default function AthleteProfile() {
     const now = new Date();
 
     return expDate > now ? true : false
+  }
+
+  const handleDelete = (athleteId: string) => {
+    try {
+      deleteAthlete(athleteId)
+      setAlertProps({
+        title: "Atleta eliminato correttamente",
+        subtitle: "",
+        isDeleted: true
+      })
+
+    } catch (error) {
+      setAlertProps({
+        title: "Errore nell'eliminazione dell'atleta",
+        subtitle: "Errore: " + error,
+        isDeleted: false
+      })
+    }
   }
 
   return (
@@ -84,10 +115,12 @@ export default function AthleteProfile() {
                     <FontAwesomeIcon icon={faPhone} size="sm" />
                     <p className="text-base">{athlete.phoneNumber}</p>
                   </div>
-                  <div className="flex gap-4 items-center">
-                    <FontAwesomeIcon icon={faEnvelope} size="sm" />
-                    <p className="text-base">{athlete.email}</p>
-                  </div>
+                  {athlete.email != "" &&
+                    <div className="flex gap-4 items-center">
+                      <FontAwesomeIcon icon={faEnvelope} size="sm" />
+                      <p className="text-base">{athlete.email}</p>
+                    </div>
+                  }
                 </div>
               </AthleteProfileCard>
               <AthleteProfileCard title="Abbonamento" icon={faCreditCard} buttonText={!subscription ? "Aggiungi abbonamento" : (isSubscriptionValid(subscription) ? "Modifica abbonamento" : "Aggiorna abbonamento")} buttonIcon={faPencil} onButtonClick={() => handleNavigate('subscription/add')}>
@@ -126,7 +159,7 @@ export default function AthleteProfile() {
                   </div>
                 }
 
-                {!subscription && 
+                {!subscription &&
                   <div className="mt-30">
                     <p className="text-base">Nessun abbonamento attivo per l'atleta {athlete.name + ' ' + athlete.surname}</p>
                   </div>
@@ -167,10 +200,28 @@ export default function AthleteProfile() {
                   </div>
                 </div>
               </AthleteProfileCard>
+
             </>
           }
         </div>
+        <div className="pt-10">
+          <button className="bg-red-700 w-full py-2 px-3 rounded-xl flex items-center justify-center cursor-pointer hover:bg-red-800" onClick={() => setShowAlert(true)}>
+            <div className="flex items-center gap-4">
+              <FontAwesomeIcon icon={faTrash} size="sm" color="white" />
+              <p className="text-white">Elimina atleta</p>
+            </div>
+          </button>
+        </div>
       </div>
+
+      <AlertDialog
+        title={alertProps.title}
+        message={alertProps.subtitle}
+        onClose={() => alertProps.isDeleted ? handleNavigate("athletes") : setShowAlert(false)}
+        onConfirm={() => handleDelete(id!)}
+        show={showAlert}
+        isDeleted={alertProps.isDeleted}
+      />
     </>
   )
 }

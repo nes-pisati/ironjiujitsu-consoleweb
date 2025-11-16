@@ -16,7 +16,7 @@ export interface Athlete {
     _id: string,
     name: string,
     surname: string,
-    birthDate: Date,
+    birthDate: string,
     fiscalCode: string,
     email: string,
     gender: GenderType,
@@ -26,9 +26,11 @@ export interface Athlete {
     subscriptionId: string,
     medicalCertificate: boolean,
     medicalCertificateExp: Date | null,
+    medicalCertificateReleaseDate: string | null,
     ensurance: boolean,
     ensuranceType: EnsuranceType,
-    ensuranceExp: Date
+    ensuranceExp: Date,
+    ensuranceStartDate: string
 }
 
 export interface Subscription {
