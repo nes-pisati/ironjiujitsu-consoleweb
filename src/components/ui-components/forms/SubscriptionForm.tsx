@@ -7,10 +7,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAthleteContext } from "../../../context/AthleteContext";
 import { calculateAge, formatDate, getTypeFromAge } from "../../../utils";
 import SubscriptionResume from "../subscription-resume/SubscriptionResume";
+import type { AlertProps } from "../alert/Alert";
 
 interface SubscriptionFormProps {
     athleteId?: string;
     mode?: 'create' | 'edit'
+}
+
+interface AlertHandler {
+    infos: AlertProps,
+    showAlert: boolean
 }
 
 export default function SubscriptionForm({ athleteId, mode = 'create' }: SubscriptionFormProps) {
@@ -25,6 +31,12 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
     const [monthAmount, setMonthAmount] = useState<number>();
     const [quaterlyAmount, setQuaterlyAmount] = useState<number>();
     const [discount, setDiscount] = useState<number>(0);
+
+    const [alert, setAlert] = useState<AlertHandler>({
+        infos: {} as AlertProps,
+        showAlert: false
+    })
+
 
     const isEditMode = mode === 'edit' && athleteId;
 
@@ -88,13 +100,38 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
         return amount - (amount * discount / 100);
     };
 
+
     const handleSubmit = async (values: Subscription) => {
         try {
             let saved;
+            let discountedAmount;
 
-            saved = await addSubscription(values.athleteId, values)
+            if (discount > 0) {
+                discountedAmount = calculateDiscount(values.amount, discount)
+            } else {
+                discountedAmount = values.amount
+            }
+            saved = await addSubscription(values.athleteId, { ...values, amount: Number(discountedAmount) })
+            setAlert({
+                infos: {
+                    title: "Abbonamento aggiunto con successo",
+                    subtitle: "L'abbonamento è stato inserito correttamente.",
+                    isError: false,
+                    path: 'subscriptions'
+                },
+                showAlert: true
+            })
         } catch (error) {
             console.error('Errore durante il salvataggio:', error);
+            setAlert({
+                infos: {
+                    title: "Errore nell'inserimento dell'Abbonamento",
+                    subtitle: "Errore:" + error,
+                    isError: true,
+                    path: 'subscriptions'
+                },
+                showAlert: true
+            })
         }
     }
 
@@ -147,11 +184,14 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
                 }
             }
 
-            if (name === 'amount') {
-                if (discount > 0) {
-                    updateValue('amount', calculateDiscount(values.amount, discount))
-                }
-            }
+            // if (name === 'amount') {
+            //     if (discount > 0) {
+            //         const discountedAmount = calculateDiscount(value, discount);
+            //         updateValue('amount', discountedAmount);
+            //     } else {
+            //         updateValue('amount', value);
+            //     }
+            // }
         }
 
         return (
@@ -249,7 +289,9 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
                             </div>
                             <Field
                                 config={fields.find((f: any) => f.name === 'amount')}
-                                value={calculateDiscount(values.amount, discount) + " €"}
+                                value={
+                                    calculateDiscount(values.amount, discount) + " €"
+                                }
                                 error={errors.amount}
                                 onChange={handleFieldChange}
                             />

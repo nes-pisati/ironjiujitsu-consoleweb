@@ -142,7 +142,7 @@ function Field<T>({ config, value, error, onChange, className = '' }: FieldProps
 
   return (
     <div className={`mb-4 ${className}`}>
-      <label className="block text-base pb-1 font-medium text-gray-700 mb-1">
+      <label className="block text-xs font-semibold pb-1 font-medium text-gray-700 mb-1">
         {config.label}
         {config.required && <span className="text-black ml-1">*</span>}
       </label>

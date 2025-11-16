@@ -5,6 +5,7 @@ import { faFileMedical, faPhone, faStethoscope, faUser } from "@fortawesome/free
 import { useAthleteContext } from "../../../context/AthleteContext";
 import { useEffect, useState } from "react";
 import { calculateAge, formatDate, getTypeFromAge } from "../../../utils";
+import Alert, { type AlertProps } from "../alert/Alert";
 
 
 interface AthleteFormProps {
@@ -12,6 +13,10 @@ interface AthleteFormProps {
   mode?: 'create' | 'edit'
 }
 
+interface AlertHandler {
+  infos: AlertProps,
+  showAlert: boolean
+}
 
 export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormProps) {
 
@@ -19,6 +24,11 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
   const [athleteData, setAthleteData] = useState<Partial<Athlete>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [alert, setAlert] = useState<AlertHandler>({
+    infos: {} as AlertProps,
+    showAlert: false
+  })
 
   const isEditMode = mode === 'edit' && athleteId;
 
@@ -133,8 +143,28 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
           medicalCertificate: medicalCertificate
         });
       }
+
+      setAlert({
+        infos: {
+          title: "Atleta aggiunto con successo",
+          subtitle: "L'atleta è stato inserito correttamente.",
+          isError: false,
+          path: 'athletes'
+        },
+        showAlert: true
+      })
+
     } catch (error) {
       console.error('Errore durante il salvataggio:', error);
+      setAlert({
+        infos: {
+          title: "Errore nell'aggiunta dell'Atleta",
+          subtitle: "Errore:" + error,
+          isError: true,
+          path: 'athletes'
+        },
+        showAlert: true
+      })
     }
   };
 
@@ -174,14 +204,14 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
     return (
       <>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-12 pb-6">
           <div className="border p-8 border-gray-300 rounded-2xl">
             <div className="pb-6">
               <div className="flex items-center gap-8 pb-2">
                 <FontAwesomeIcon icon={faUser} size="sm" />
                 <p className="text-2xl font-semibold text-gray-800">Informazioni Personali</p>
               </div>
-              <p className="text-lg text-gray-400">Dati anagrafici dell'atleta</p>
+              <p className="text-md text-gray-400">Dati anagrafici dell'atleta</p>
             </div>
             <div className="grid grid-cols-2 gap-6">
               <Field
@@ -253,7 +283,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
                 <FontAwesomeIcon icon={faPhone} size="sm" />
                 <p className="text-2xl font-semibold text-gray-800">Contatti</p>
               </div>
-              <p className="text-lg text-gray-400">Informazioni di contatto</p>
+              <p className="text-md text-gray-400">Informazioni di contatto</p>
             </div>
             <Field
               config={fields.find((f: any) => f.name === 'email')}
@@ -270,14 +300,14 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
           </div>
 
         </div>
-        <div className="grid grid-cols-1 gap-8 pb-12">
+        <div className="grid grid-cols-1 gap-8 pb-5">
           <div className="border p-8 border-gray-300 rounded-2xl">
             <div className="pb-6">
               <div className="flex items-center gap-8 pb-2">
                 <FontAwesomeIcon icon={faStethoscope} size="sm" />
                 <p className="text-2xl font-semibold text-gray-800">Certificato Medico</p>
               </div>
-              <p className="text-lg text-gray-400">Registrazione del certificato</p>
+              <p className="text-md text-gray-400">Registrazione del certificato</p>
             </div>
             {/* <Field
               config={fields.find((f: any) => f.name === 'medicalCertificate')}
@@ -301,7 +331,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
                 <FontAwesomeIcon icon={faFileMedical} size="sm" />
                 <p className="text-2xl font-semibold text-gray-800">Assicurazione</p>
               </div>
-              <p className="text-lg text-gray-400">Inserimento assicurazione</p>
+              <p className="text-md text-gray-400">Inserimento assicurazione</p>
             </div>
             {/* <Field
               config={fields.find((f: any) => f.name === 'ensurance')}
@@ -324,6 +354,10 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
           </div>
         </div>
+        {
+          alert.showAlert && <Alert title={alert.infos.title} subtitle={alert.infos.subtitle} isError={alert.infos.isError} path={alert.infos.path}/>
+        }
+        
       </>
     );
   };
