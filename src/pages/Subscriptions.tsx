@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import PageTitle from "../components/ui-components/PageTitle";
 import { useSubscriptionContext } from "../context/SubscriptionsContext";
 import SubscriptionStatsCard from "../components/ui-components/subscriptions/SubscriptionStatsCard";
 import { faCalendar, faMoneyBill, faUsers } from "@fortawesome/free-solid-svg-icons";
-import type { Subscription } from "../types";
 import { useNavigate } from "react-router-dom";
 
 export default function Subscriptions() {
@@ -28,7 +26,7 @@ export default function Subscriptions() {
           <SubscriptionStatsCard title="Abbonamenti Mensili Attivi" icon={faUsers} count={monthlySubscriptionsCount} subtitle="Mensili di questo mese" />
           <SubscriptionStatsCard title="Abbonamenti Trimestrali Attivi" icon={faUsers} count={quarterlySubscriptionsCount} subtitle="Trimestrali di questo mese" />
           <SubscriptionStatsCard title="Abbonamenti Scaduti" icon={faCalendar} count={expiredSubscriptions} subtitle="Da rinnovare" textColor="text-red-600" />
-          <SubscriptionStatsCard title="Incasso mensile" icon={faMoneyBill} count={monthEarning + ' €'} subtitle="Entrate mensili totali" />
+          {/* <SubscriptionStatsCard title="Incasso mensile" icon={faMoneyBill} count={monthEarning + ' €'} subtitle="Entrate mensili totali" /> */}
         </div>
       </div>
     </>

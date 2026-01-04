@@ -8,13 +8,15 @@ interface SubscriptionsContextType {
   loading: boolean;
   error: string | null;
   getAllSubscriptions: () => Promise<void>;
-  getSubscriptionByAthlete: (athleteId: string) => Promise<Subscription[] | null>;
+  getSubscriptionByAthlete: (athleteId: string) => Promise<Subscription | null>;
   getLastSubscriptionByAthlete: (athleteId: string) => Promise<Subscription | null>;
   addSubscription: (athleteId: string, subscription: Omit<Subscription, '_id'>) => Promise<Subscription | null>;
+  updateSubscription: (id: string, subscription: Partial<Subscription>) => Promise<void>;
   monthlySubscriptionsCount: number;
   quarterlySubscriptionsCount: number;
   monthEarning: number;
   expiredSubscriptions: number;
+  getSubscriptionById: (id: string) => Promise<Subscription | null>;
 }
 
 export const SubscriptionContext = createContext<SubscriptionsContextType | undefined>(undefined);
@@ -32,10 +34,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   const [monthlySubscriptionsCount, setMonthlySubscriptionsCount] = useState<number>(0);
   const [quarterlySubscriptionsCount, setQuarterlySubscriptionsCount] = useState<number>(0);
 
-
   const apiUrl = import.meta.env.VITE_API_URL;
   const today = new Date();
-  const currentMonth = today.getMonth() + 1
+  const currentMonth = today.getMonth() + 1;
 
   const getAllSubscriptions = async () => {
     setLoading(true);
@@ -51,68 +52,12 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     }
   };
 
-  const getMonthEarn = () => {
-    if (!subscriptions || subscriptions.length === 0) return 0;
-
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-  
-    const subscriptionsOfTheMonth = subscriptions.filter(sub => {
-      if (!sub.createdAt) return false;
-      const createdDate = new Date(sub.createdAt);
-      return (
-        createdDate.getMonth() === currentMonth &&
-        createdDate.getFullYear() === currentYear
-      );
-    });
-  
-    const amount = subscriptionsOfTheMonth.reduce(
-      (sum, sub) => sum + (sub.amount || 0),
-      0
-    );
-
-    setMonthEarning(amount);
-    return amount;
-  }
-
-  const getExpiredSubscriptions = () => { 
-    if (!subscriptions || subscriptions.length === 0) return 0;
-
-    const now = new Date();
-  
-    const total = subscriptions.reduce((sum, sub) => {
-      const subDate = new Date(sub.subscriptionExp);
-      if (now > subDate) {
-        return sum + 1;
-      }
-      return sum;
-    }, 0);
-
-    setExpiredSubscriptions(total)
-  }
-
-  const getSubscriptionByAthlete = async (athleteId: string): Promise<Subscription[] | null> => {
+  const getSubscriptionByAthlete = async (athleteId: string): Promise<Subscription | null> => {
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(`${apiUrl}/subscription/getbyathlete/${athleteId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Errore nel recupero dello storico abbonamenti per atleta:', error);
-      setError('Errore nel recupero dello storico abbonamenti per atleta');
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const getLastSubscriptionByAthlete = async (athleteId: string): Promise<Subscription | null> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get(`${apiUrl}/subscription/getbyathlete/${athleteId}`);
-      return response.data[0];
+      return response.data; // singolo abbonamento o null
     } catch (error) {
       console.error('Errore nel recupero dell\'abbonamento per atleta:', error);
       setError('Errore nel recupero dell\'abbonamento per atleta');
@@ -120,68 +65,109 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const getLastSubscriptionByAthlete = getSubscriptionByAthlete; // alias, coerente con nuovo backend
 
   const addSubscription = async (
     athleteId: string,
     subscription: Omit<Subscription, '_id'>
-  ): Promise<Subscription> => {
+  ): Promise<Subscription | null> => {
     setLoading(true);
     setError(null);
-  
     try {
       const response = await axios.post(`${apiUrl}/subscription/post/${athleteId}`, subscription);
-      return response.data as Subscription;
+      const newSub: Subscription = response.data;
+      setSubscriptions((prev) => [...prev.filter(s => s.athleteId !== athleteId), newSub]);
+      return newSub;
     } catch (error: any) {
       console.error('Errore nella creazione della subscription:', error);
-      const errorMsg =
-        error.response?.data?.error ||
-        'Errore nella creazione della subscription';
-      setError(errorMsg);
+      setError(error.response?.data?.error || 'Errore nella creazione della subscription');
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const getMonthlySubscriptionCount = () => {
-    if (!subscriptions || subscriptions.length === 0) return;
-
-    const count = subscriptions.filter(sub => 
-      sub.type === 'month' && new Date(sub.subscriptionExp) > new Date()
-    ).length;    
-    setMonthlySubscriptionsCount(count)
-  }
-
-  const getQuarterlySubscriptionCount = () => {
-    if (!subscriptions || subscriptions.length === 0) return;
-
-    const count = subscriptions.filter(sub => 
-      sub.type === 'quarterly' && new Date(sub.subscriptionExp) > new Date()
-    ).length;    
-    setQuarterlySubscriptionsCount(count)
-  }
-  
-  useEffect(() => {
-    getAllSubscriptions();
-  }, [currentMonth]);
-
-  useEffect(() => {
-    if (subscriptions && subscriptions.length > 0) {
-      getExpiredSubscriptions();
-      getMonthlySubscriptionCount();
-      getQuarterlySubscriptionCount();
-      getMonthEarn();
+  const updateSubscription = async (id: string, subscription: Partial<Subscription>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.put(`${apiUrl}/subscription/edit/${id}`, subscription);
+      const updatedSubscription: Subscription = response.data;
+      setSubscriptions((prev) =>
+        prev.map((s) => (s._id === id ? updatedSubscription : s))
+      );
+    } catch (error) {
+      console.error('Errore nell\'aggiornamento dell\'abbonamento', error);
+      setError('Errore nell\'aggiornamento dell\'abbonamento');
+      throw error;
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Statistiche
+  useEffect(() => {
+    if (!subscriptions || subscriptions.length === 0) return;
+
+    const now = new Date();
+
+    const monthlyCount = subscriptions.filter(s => s.type === 'month' && new Date(s.subscriptionExp) > now).length;
+    const quarterlyCount = subscriptions.filter(s => s.type === 'quarterly' && new Date(s.subscriptionExp) > now).length;
+    const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now).length;
+    const monthEarn = subscriptions
+      .filter(s => {
+        const created = new Date(s.createdAt || '');
+        return created.getMonth() === currentMonth - 1 && created.getFullYear() === now.getFullYear();
+      })
+      .reduce((sum, s) => sum + (s.amount || 0), 0);
+
+    setMonthlySubscriptionsCount(monthlyCount);
+    setQuarterlySubscriptionsCount(quarterlyCount);
+    setExpiredSubscriptions(expired);
+    setMonthEarning(monthEarn);
   }, [subscriptions, currentMonth]);
 
+  useEffect(() => {
+    getAllSubscriptions();
+  }, []);
+
+  const getSubscriptionById = async (id: string): Promise<Subscription | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`${apiUrl}/subscription/get/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Errore nel recupero dell\'abbonamento per ID:', error);
+      setError('Errore nel recupero dell\'abbonamento');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };  
 
   return (
-    <SubscriptionContext.Provider value={{ subscriptions, loading, error, getAllSubscriptions, monthEarning, expiredSubscriptions, getSubscriptionByAthlete, getLastSubscriptionByAthlete, addSubscription, monthlySubscriptionsCount, quarterlySubscriptionsCount }}>
+    <SubscriptionContext.Provider value={{
+      subscriptions,
+      loading,
+      error,
+      getAllSubscriptions,
+      monthEarning,
+      expiredSubscriptions,
+      getSubscriptionByAthlete,
+      getLastSubscriptionByAthlete,
+      addSubscription,
+      updateSubscription,
+      monthlySubscriptionsCount,
+      quarterlySubscriptionsCount,
+      getSubscriptionById
+    }}>
       {children}
     </SubscriptionContext.Provider>
-  )
-}
+  );
+};
 
 export const useSubscriptionContext = (): SubscriptionsContextType => {
   const context = React.useContext(SubscriptionContext);

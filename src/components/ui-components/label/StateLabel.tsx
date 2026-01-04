@@ -13,7 +13,7 @@ const StateLabel: React.FC<LabelStateProps> = ({ date, feminine = false }) => {
   let text = "Assente";
   let bgColor = "bg-yellow-500";
 
-  if (date !== null) {
+  if (date) {
     const today = new Date();
     const startDate = new Date(date);
 

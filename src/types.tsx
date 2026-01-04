@@ -34,7 +34,7 @@ export interface Athlete {
 }
 
 export interface Subscription {
-    uid: string,
+    _id: string,
     date: Date,
     type: SubscriptionType,
     amount: number,

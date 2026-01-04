@@ -7,16 +7,21 @@ export default function AddSubscription() {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    console.log('AddAthlete - ID dall\'URL:', id); // ← Debug
+    console.log('AddAthlete - ID dall\'URL:', id);
 
     const handleNavigate = () => {
-        navigate('/subscriptions')
-    }
+        if (window.history.length > 1) {
+            navigate(-1);
+        } else {
+            navigate("/subscriptions");
+        }
+    };
+
 
     const pageTitle = id ? "Modifica Abbonamento" : "Aggiungi Abbonamento"
     const pageSubtitle = id ? "Modifica l'abbonamento" : "Aggiungi un nuovo abbonamento"
     const isEditMode = Boolean(id);
-    
+
     return (
         <>
             <div className="pe-12">
@@ -28,8 +33,9 @@ export default function AddSubscription() {
                     btnText="Indietro"
                     onBtnClick={() => handleNavigate()}
                 />
-                <SubscriptionForm 
-                    
+                <SubscriptionForm
+                    subscriptionId={id}
+                    mode={isEditMode ? 'edit' : 'create'}
                 />
             </div>
         </>

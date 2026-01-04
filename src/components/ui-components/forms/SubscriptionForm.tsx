@@ -8,9 +8,11 @@ import { useAthleteContext } from "../../../context/AthleteContext";
 import { calculateAge, formatDate, getTypeFromAge } from "../../../utils";
 import SubscriptionResume from "../subscription-resume/SubscriptionResume";
 import type { AlertProps } from "../alert/Alert";
+import Alert from "../alert/Alert";
+import { useLocation } from "react-router-dom";
 
 interface SubscriptionFormProps {
-    athleteId?: string;
+    subscriptionId?: string;
     mode?: 'create' | 'edit'
 }
 
@@ -19,12 +21,16 @@ interface AlertHandler {
     showAlert: boolean
 }
 
-export default function SubscriptionForm({ athleteId, mode = 'create' }: SubscriptionFormProps) {
+type LocationState = { //serve a recuperare l'id dell'atleta in caso di aggiunta abbonamento direttamente dal profilo dell'atleta
+    athleteId?: string;
+};
 
-    const { addSubscription } = useSubscriptionContext();
+export default function SubscriptionForm({ subscriptionId, mode = 'create' }: SubscriptionFormProps) {
+
+    const { addSubscription, getSubscriptionById, updateSubscription } = useSubscriptionContext();
     const { athletes, getAthlete } = useAthleteContext();
 
-    const [subscriptionData, setSubscriptionData] = useState<Partial<Subscription>>({});
+    const [subscriptionData, setSubscriptionData] = useState<Partial<Subscription> | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -37,8 +43,10 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
         showAlert: false
     })
 
+    const location = useLocation();
+    const { athleteId } = (location.state as LocationState) || {};
 
-    const isEditMode = mode === 'edit' && athleteId;
+    const isEditMode = mode === 'edit' && subscriptionId;
 
     const subscriptionTypeOptions = [
         { value: 'month', label: `Mensile - ${monthAmount} €` },
@@ -51,6 +59,40 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
         { value: 'paypal', label: 'PayPal' },
         { value: 'other', label: 'Altro' }
     ]
+
+
+    useEffect(() => {
+        const initForm = async () => {
+            if (isEditMode && subscriptionId) {
+                try {
+                    const subscription = await getSubscriptionById(subscriptionId);
+
+                    if (subscription) {
+                        setSubscriptionData({ athleteId: subscription.athleteId });
+                        getSubscriptionAmounts(subscription.athleteId);
+                    } else {
+                        setSubscriptionData({});
+                    }
+                } catch (err) {
+                    console.error("Errore caricamento subscription", err);
+                    setSubscriptionData({});
+                }
+                return;
+            }
+
+            if (athleteId) {
+                setSubscriptionData({ athleteId });
+                getSubscriptionAmounts(athleteId);
+                return;
+            }
+
+            setSubscriptionData({});
+        };
+
+        initForm();
+    }, [isEditMode, subscriptionId, athleteId]);
+
+
 
     const getSubscriptionExpFromStartDate = (startDate: Date, subscriptionType: SubscriptionType): Date => {
         const start = new Date(startDate);
@@ -111,16 +153,30 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
             } else {
                 discountedAmount = values.amount
             }
-            saved = await addSubscription(values.athleteId, { ...values, amount: Number(discountedAmount) })
-            setAlert({
-                infos: {
-                    title: "Abbonamento aggiunto con successo",
-                    subtitle: "L'abbonamento è stato inserito correttamente.",
-                    isError: false,
-                    path: 'subscriptions'
-                },
-                showAlert: true
-            })
+
+            if(isEditMode) {
+                    saved = await updateSubscription( subscriptionId, { ...values, amount: Number(discountedAmount) })
+                    setAlert({
+                        infos: {
+                            title: "Abbonamento aggiornato con successo",
+                            subtitle: "L'abbonamento è stato inserito correttamente.",
+                            isError: false,
+                            path: 'subscriptions'
+                        },
+                        showAlert: true
+                    })
+            } else {
+                saved = await addSubscription(values.athleteId, { ...values, amount: Number(discountedAmount) })
+                setAlert({
+                    infos: {
+                        title: "Abbonamento aggiunto con successo",
+                        subtitle: "L'abbonamento è stato inserito correttamente.",
+                        isError: false,
+                        path: 'subscriptions'
+                    },
+                    showAlert: true
+                })
+            }
         } catch (error) {
             console.error('Errore durante il salvataggio:', error);
             setAlert({
@@ -210,6 +266,7 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
                             value={values.athleteId}
                             error={errors.athleteId}
                             onChange={handleFieldChange}
+
                         />
                     </div>
                     <div className="border p-8 border-gray-300 rounded-2xl">
@@ -342,7 +399,9 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
                         type={values.type ? values.type === 'month' ? 'Mensile' : 'Trimestrale' : ""}
                     />
                 }
-
+                {
+                    alert.showAlert && <Alert title={alert.infos.title} subtitle={alert.infos.subtitle} isError={alert.infos.isError} path={alert.infos.path} />
+                }
             </>
         )
 
@@ -395,22 +454,23 @@ export default function SubscriptionForm({ athleteId, mode = 'create' }: Subscri
     ]
 
     return (
-        <>
-            <div className="">
-                <div className="space-y-8">
-                    <div>
-                        {(!isEditMode || Object.keys(subscriptionData).length > 0) && (
-                            <ModularForm
-                                fields={subscriptionFields}
-                                initialValues={subscriptionData}
-                                onSubmit={handleSubmit}
-                                submitLabel={isEditMode ? "Aggiorna Abbonamento" : "Aggiungi Abbonamento"}
-                                layout={<TwoColumnLayout />}
-                            />
-                        )}
-                    </div>
+        <div className="">
+            <div className="space-y-8">
+                <div>
+                    {subscriptionData !== null && (
+                        <ModularForm
+                            fields={subscriptionFields}
+                            initialValues={subscriptionData}
+                            onSubmit={handleSubmit}
+                            submitLabel={
+                                isEditMode ? "Aggiorna Abbonamento" : "Aggiungi Abbonamento"
+                            }
+                            layout={<TwoColumnLayout />}
+                        />
+                    )}
                 </div>
             </div>
-        </>
-    )
+        </div>
+    );
+
 }

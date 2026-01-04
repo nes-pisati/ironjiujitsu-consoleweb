@@ -144,7 +144,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
       if (isEditMode) {
         const { ensuranceExp, medicalCertificateExp, ...rest } = values;
-      
+
         saved = await editAthlete(athleteId!, {
           ...rest,
           birthDate: formattedBirthDay,
@@ -154,6 +154,17 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
           medicalCertificateReleaseDate: formattedMedicalCertificateStartDate,
           email: email
         });
+
+
+        setAlert({
+          infos: {
+            title: "Atleta aggiornato con successo",
+            subtitle: "Le informazioni sono state aggiornate correttamente.",
+            isError: false,
+            path: 'athletes'
+          },
+          showAlert: true
+        })
       }
       else {
         saved = await addAthlete({
@@ -162,17 +173,17 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
           medicalCertificate: medicalCertificate,
           email: email
         });
-      }
 
-      setAlert({
-        infos: {
-          title: "Atleta aggiunto con successo",
-          subtitle: "L'atleta è stato inserito correttamente.",
-          isError: false,
-          path: 'athletes'
-        },
-        showAlert: true
-      })
+        setAlert({
+          infos: {
+            title: "Atleta aggiunto con successo",
+            subtitle: "L'atleta è stato inserito correttamente.",
+            isError: false,
+            path: 'athletes'
+          },
+          showAlert: true
+        })
+      }
 
     } catch (error) {
       console.error('Errore durante il salvataggio:', error);
@@ -295,7 +306,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
                   Cintura
                   <span className="text-black ml-1">*</span>
                 </label>
-                <div className="w-full text-sm p-4 border border-gray-300 rounded-xl bg-gray-100 text-gray-500">
+                <div className="w-full text-sm p-3 border border-gray-300 rounded-xl bg-gray-100 text-gray-500">
                   Seleziona prima la tipologia
                 </div>
               </div>
@@ -359,7 +370,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
             />
             <Field
               config={fields.find((f: any) => f.name === 'ensuranceStartDate')}
-              value = {isEditMode ? formatFieldsDate(values.ensuranceStartDate) : values.ensuranceStartDate}
+              value={isEditMode ? formatFieldsDate(values.ensuranceStartDate) : values.ensuranceStartDate}
               error={errors.ensuranceStartDate}
               onChange={handleFieldChange}
             />
