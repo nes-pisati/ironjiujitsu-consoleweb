@@ -8,7 +8,7 @@ export default function Subscriptions() {
 
   const navigate = useNavigate();
 
-  const { monthEarning, expiredSubscriptions, monthlySubscriptionsCount, quarterlySubscriptionsCount } = useSubscriptionContext();
+  const { monthEarning, expiredSubscriptionsCount, monthlySubscriptionsCount, quarterlySubscriptionsCount } = useSubscriptionContext();
 
 
   const handleNavigate = () => {
@@ -25,8 +25,8 @@ export default function Subscriptions() {
         <div className="py-10 grid grid-cols-4 gap-5">
           <SubscriptionStatsCard title="Abbonamenti Mensili Attivi" icon={faUsers} count={monthlySubscriptionsCount} subtitle="Mensili di questo mese" />
           <SubscriptionStatsCard title="Abbonamenti Trimestrali Attivi" icon={faUsers} count={quarterlySubscriptionsCount} subtitle="Trimestrali di questo mese" />
-          <SubscriptionStatsCard title="Abbonamenti Scaduti" icon={faCalendar} count={expiredSubscriptions} subtitle="Da rinnovare" textColor="text-red-600" />
-          {/* <SubscriptionStatsCard title="Incasso mensile" icon={faMoneyBill} count={monthEarning + ' €'} subtitle="Entrate mensili totali" /> */}
+          <SubscriptionStatsCard title="Abbonamenti Scaduti" icon={faCalendar} count={expiredSubscriptionsCount} subtitle="Da rinnovare" textColor="text-red-600" />
+          <SubscriptionStatsCard title="Incasso mensile" icon={faMoneyBill} count={monthEarning + ' €'} subtitle="Entrate mensili totali" />
         </div>
       </div>
     </>

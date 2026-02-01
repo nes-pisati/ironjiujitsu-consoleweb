@@ -11,6 +11,8 @@ interface AthleteContextType {
     editAthlete: (id: string, athlete: Partial<Athlete>) => Promise<void>;
     deleteAthlete: (id: string) => Promise<void>;
     getAllAthletes: () => Promise<void>;
+    noMedicalCertificateAthleteList: Athlete[];
+    expiredMedicalCertificateAthleteList: Athlete[];
 }
 
 export const AthleteContext = createContext<AthleteContextType | undefined>(undefined);
@@ -21,9 +23,11 @@ interface AthleteProviderProps {
 
 export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) => {
     const [athletes, setAthletes] = useState<Athlete[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
+    const [noMedicalCertificateAthleteList, setNoMedicalCertificateAthleteList] = useState<Athlete[]>([]);
+    const [expiredMedicalCertificateAthleteList, setExpiredMedicalCertificateAthleteList] = useState<Athlete[]>([]);
+
     const apiUrl = import.meta.env.VITE_API_URL;
 
     const getAllAthletes = async () => {
@@ -32,8 +36,7 @@ export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) =>
         try {
             const response = await axios.get(`${apiUrl}/athlete/get`);
             setAthletes(response.data);
-        } catch (error) {
-            console.error('Errore nel recupero degli atleti:', error);
+        } catch (err) {
             setError('Errore nel recupero degli atleti');
         } finally {
             setLoading(false);
@@ -41,90 +44,80 @@ export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) =>
     };
 
     const addAthlete = async (athlete: Omit<Athlete, '_id'>) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.post(`${apiUrl}/athlete/post`, athlete);
-            const newAthlete: Athlete = response.data;
-            setAthletes((prev) => [...prev, newAthlete]);
-        } catch (error) {
-            console.error('Errore nella creazione dell\'atleta:', error);
-            setError('Errore nella creazione dell\'atleta');
-            throw error; 
-        } finally {
-            setLoading(false);
-        }
+        const response = await axios.post(`${apiUrl}/athlete/post`, athlete);
+        setAthletes(prev => [...prev, response.data]);
     };
 
-    const getAthlete = async (id: string): Promise<Athlete | null> => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.get(`${apiUrl}/athlete/get/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error('Errore nel recupero dell\'atleta:', error);
-            setError('Errore nel recupero dell\'atleta');
-            return null;
-        } finally {
-            setLoading(false);
-        }
+    const getAthlete = async (id: string) => {
+        const response = await axios.get(`${apiUrl}/athlete/get/${id}`);
+        return response.data;
     };
 
     const editAthlete = async (id: string, athlete: Partial<Athlete>) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.put(`${apiUrl}/athlete/edit/${id}`, athlete);
-            const updatedAthlete: Athlete = response.data;
-            setAthletes((prev) => 
-                prev.map((a) => (a._id === id ? { ...a, ...updatedAthlete } : a))
-            );
-        } catch (error) {
-            console.error('Errore nell\'aggiornamento dell\'atleta:', error);
-            setError('Errore nell\'aggiornamento dell\'atleta');
-            throw error;
-        } finally {
-            setLoading(false);
-        }
+        const response = await axios.put(`${apiUrl}/athlete/edit/${id}`, athlete);
+        setAthletes(prev =>
+            prev.map(a => (a._id === id ? response.data : a))
+        );
     };
 
     const deleteAthlete = async (id: string) => {
-        setLoading(true);
-        setError(null);
-        try {
-            await axios.delete(`${apiUrl}/athlete/delete/${id}`);
-            setAthletes((prev) => prev.filter((athlete) => athlete._id !== id));
-        } catch (error) {
-            console.error('Errore nell\'eliminazione dell\'atleta:', error);
-            setError('Errore nell\'eliminazione dell\'atleta');
-            throw error;
-        } finally {
-            setLoading(false);
-        }
+        await axios.delete(`${apiUrl}/athlete/delete/${id}`);
+        setAthletes(prev => prev.filter(a => a._id !== id));
     };
 
     useEffect(() => {
         getAllAthletes();
     }, []);
 
+    useEffect(() => {
+        getNoMedicalCertificateAthleteList();
+        getExpiredMedicalCertificateAthleteList();
+
+        console.log("noMedicalCertificateAthleteList", noMedicalCertificateAthleteList);
+        console.log("expiredMedicalCertificateAthleteList", expiredMedicalCertificateAthleteList);
+    }, [athletes]);
+
+    const getNoMedicalCertificateAthleteList = () => {
+        if (!athletes) return;
+        const noMedicalCertificateAthleteList = athletes.filter((athlete) => !athlete.medicalCertificate);
+        setNoMedicalCertificateAthleteList(noMedicalCertificateAthleteList);
+    };
+
+    const getExpiredMedicalCertificateAthleteList = () => {
+        if (!athletes) return;
+
+        const now = new Date();
+
+        const expired = athletes.filter((athlete) => {
+            if (!athlete.medicalCertificate || !athlete.medicalCertificateExp) return false;
+
+            return new Date(athlete.medicalCertificateExp).getTime() < now.getTime();
+        });
+
+        setExpiredMedicalCertificateAthleteList(expired);
+    };
+
+
     return (
-        <AthleteContext.Provider 
+        <AthleteContext.Provider
             value={{
-                athletes, 
+                athletes,
                 loading,
                 error,
-                getAllAthletes, 
-                addAthlete, 
-                getAthlete, 
-                editAthlete, 
-                deleteAthlete
+                addAthlete,
+                getAthlete,
+                editAthlete,
+                deleteAthlete,
+                getAllAthletes,
+                noMedicalCertificateAthleteList,
+                expiredMedicalCertificateAthleteList,
             }}
         >
             {children}
         </AthleteContext.Provider>
     );
 };
+
 
 export const useAthleteContext = (): AthleteContextType => {
     const context = React.useContext(AthleteContext);

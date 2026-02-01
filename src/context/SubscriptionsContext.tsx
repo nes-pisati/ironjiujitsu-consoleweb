@@ -2,6 +2,12 @@ import { createContext, useEffect, useState, type ReactNode } from "react";
 import type { Subscription } from "../types";
 import axios from "axios";
 import React from "react";
+import { useAthleteContext } from "./AthleteContext";
+
+export interface ExpiredSubscriptionDetail {
+  athleteName: string;
+  daysExpired: number;
+}
 
 interface SubscriptionsContextType {
   subscriptions: Subscription[];
@@ -15,8 +21,9 @@ interface SubscriptionsContextType {
   monthlySubscriptionsCount: number;
   quarterlySubscriptionsCount: number;
   monthEarning: number;
-  expiredSubscriptions: number;
+  expiredSubscriptionsCount: number;
   getSubscriptionById: (id: string) => Promise<Subscription | null>;
+  expiredSubscriptionsList: ExpiredSubscriptionDetail[];
 }
 
 export const SubscriptionContext = createContext<SubscriptionsContextType | undefined>(undefined);
@@ -30,13 +37,17 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [monthEarning, setMonthEarning] = useState<number>(0);
-  const [expiredSubscriptions, setExpiredSubscriptions] = useState<number>(0);
+  const [expiredSubscriptionsCount, setExpiredSubscriptionsCount] = useState<number>(0);
   const [monthlySubscriptionsCount, setMonthlySubscriptionsCount] = useState<number>(0);
   const [quarterlySubscriptionsCount, setQuarterlySubscriptionsCount] = useState<number>(0);
+  const [expiredSubscriptionsList, setExpiredSubscriptionsList] = useState<ExpiredSubscriptionDetail[]>([]);
+
+  const { athletes } = useAthleteContext();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
+  const now = new Date();
 
   const getAllSubscriptions = async () => {
     setLoading(true);
@@ -111,11 +122,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   useEffect(() => {
     if (!subscriptions || subscriptions.length === 0) return;
 
-    const now = new Date();
-
     const monthlyCount = subscriptions.filter(s => s.type === 'month' && new Date(s.subscriptionExp) > now).length;
     const quarterlyCount = subscriptions.filter(s => s.type === 'quarterly' && new Date(s.subscriptionExp) > now).length;
-    const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now).length;
+    const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now);
     const monthEarn = subscriptions
       .filter(s => {
         const created = new Date(s.createdAt || '');
@@ -125,8 +134,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
 
     setMonthlySubscriptionsCount(monthlyCount);
     setQuarterlySubscriptionsCount(quarterlyCount);
-    setExpiredSubscriptions(expired);
+    setExpiredSubscriptionsCount(expired.length);
     setMonthEarning(monthEarn);
+    getExpiredSubscriptionslist();
   }, [subscriptions, currentMonth]);
 
   useEffect(() => {
@@ -146,7 +156,33 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     } finally {
       setLoading(false);
     }
-  };  
+  };
+
+  const getExpiredSubscriptionslist = async (): Promise<ExpiredSubscriptionDetail[] | undefined> => {
+    if (!subscriptions || subscriptions.length === 0) return undefined;
+
+    if (athletes) {
+      const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now);
+
+      const expiredDetails = expired.map(s => {
+        const diffTime = now.getTime() - new Date(s.subscriptionExp).getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        const athlete = athletes.find(a => a._id === s.athleteId);
+
+        const athleteName = athlete ? `${athlete.name} ${athlete.surname}` : 'Unknown Athlete';
+
+        return {
+          athleteName,
+          daysExpired: diffDays
+        };
+      });
+
+      setExpiredSubscriptionsList(expiredDetails);
+      return expiredDetails;
+    }
+
+  };
 
   return (
     <SubscriptionContext.Provider value={{
@@ -155,14 +191,15 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
       error,
       getAllSubscriptions,
       monthEarning,
-      expiredSubscriptions,
+      expiredSubscriptionsCount,
       getSubscriptionByAthlete,
       getLastSubscriptionByAthlete,
       addSubscription,
       updateSubscription,
       monthlySubscriptionsCount,
       quarterlySubscriptionsCount,
-      getSubscriptionById
+      getSubscriptionById,
+      expiredSubscriptionsList
     }}>
       {children}
     </SubscriptionContext.Provider>

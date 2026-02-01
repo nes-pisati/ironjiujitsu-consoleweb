@@ -126,6 +126,8 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       let medicalCertificate;
       let email;
 
+      const today = new Date();
+
       if (!values.medicalCertificateReleaseDate) {
         medicalCertificate = false;
       } else {
@@ -152,7 +154,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
           ensuranceStartDate: formattedEnsuranceStartDate,
           medicalCertificate: medicalCertificate,
           medicalCertificateReleaseDate: formattedMedicalCertificateStartDate,
-          email: email
+          email: email,
         });
 
 
@@ -171,7 +173,9 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
           ...values,
           ensurance: true,
           medicalCertificate: medicalCertificate,
-          email: email
+          email: email,
+          whatsappConsent: true,
+          whatsappConsentDate: today
         });
 
         setAlert({
@@ -201,9 +205,9 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
   const TwoColumnLayout = ({ fields, values, errors, updateValue, Field }: any) => {
 
-    useEffect(() => {
-      console.log("Values ->", values);
-    }, [values])
+    // useEffect(() => {
+    //   console.log("Values ->", values);
+    // }, [values])
 
     const getBeltOptions = () => {
       if (values.type === 'kids') {
@@ -346,7 +350,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
             </div>
             <Field
               config={fields.find((f: any) => f.name === 'medicalCertificateReleaseDate')}
-              value={isEditMode ? formatFieldsDate(values.medicalCertificateReleaseDate) : values.medicalCertificateReleaseDate}
+              value={isEditMode && values.medicalCertificateReleaseDate ? formatFieldsDate(values.medicalCertificateReleaseDate) : values.medicalCertificateReleaseDate}
               error={errors.medicalCertificateReleaseDate}
               onChange={
                 handleFieldChange
