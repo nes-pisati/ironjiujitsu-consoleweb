@@ -1,8 +1,8 @@
 export type AdultBelts = 'white' | 'blue' | 'purple' | 'brown' | 'black';
-export type KidsBelts =     'white' | 'greywhite' | 'grey' | 'greyblack' |
-'yellowwhite' | 'yellow' | 'yellowblack' |
-'orangewhite' | 'orange' | 'orangeblack' |
-'greenwhite' | 'green' | 'greenblack'; 
+export type KidsBelts = 'white' | 'greywhite' | 'grey' | 'greyblack' |
+    'yellowwhite' | 'yellow' | 'yellowblack' |
+    'orangewhite' | 'orange' | 'orangeblack' |
+    'greenwhite' | 'green' | 'greenblack';
 export type AthleteType = 'kid' | 'adult';
 
 export type SubscriptionType = 'month' | 'quarterly';
@@ -30,7 +30,9 @@ export interface Athlete {
     ensurance: boolean,
     ensuranceType: EnsuranceType,
     ensuranceExp: Date,
-    ensuranceStartDate: string
+    ensuranceStartDate: string,
+    whatsappConsent: boolean,
+    whatsappConsentDate: Date
 }
 
 export interface Subscription {
@@ -43,4 +45,9 @@ export interface Subscription {
     notes?: string,
     paymentType: PaymentType,
     createdAt: Date
+}
+
+export interface User {
+    username: string,
+    password: string,
 }
