@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileMedical, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useAthleteContext } from "../../../context/AthleteContext";
 import { useEffect, useState } from "react";
-import { calculateAge, formatDate, formatFieldsDate, getTypeFromAge } from "../../../utils";
+import { calculateAge, formatFieldsDate, getTypeFromAge } from "../../../utils";
 import Alert, { type AlertProps } from "../alert/Alert";
 
 
@@ -22,7 +22,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
   const { addAthlete, editAthlete, getAthlete } = useAthleteContext();
   const [athleteData, setAthleteData] = useState<Partial<Athlete>>({});
-  const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
 
   const [alert, setAlert] = useState<AlertHandler>({
@@ -33,7 +33,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
   const isEditMode = mode === 'edit' && athleteId;
 
   const loadAthleteData = async (id: string): Promise<Athlete | null> => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const athlete = await getAthlete(id);
       if (!athlete) {
@@ -45,7 +45,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       console.error('Errore caricamento atleta:', err);
       return null;
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -122,7 +122,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
   const handleSubmit = async (values: Athlete) => {
 
     try {
-      let saved;
+
       let medicalCertificate;
       let email;
 
@@ -147,7 +147,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       if (isEditMode) {
         const { ensuranceExp, medicalCertificateExp, ...rest } = values;
 
-        saved = await editAthlete(athleteId!, {
+        await editAthlete(athleteId!, {
           ...rest,
           birthDate: formattedBirthDay,
           ensurance: true,
@@ -169,7 +169,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
         })
       }
       else {
-        saved = await addAthlete({
+        await addAthlete({
           ...values,
           ensurance: true,
           medicalCertificate: medicalCertificate,

@@ -9,7 +9,7 @@ export type AlertProps = {
 
 const Alert: React.FC<AlertProps> = ({ title, subtitle, isError, path }) => {
 
-    let style = "flex items-center justify-between gap-2 px-5 py-2 rounded-xl border border-2";
+    const style = "flex items-center justify-between gap-2 px-5 py-2 rounded-xl border border-2";
     let bgColor = "";
     let textColor = ""
 

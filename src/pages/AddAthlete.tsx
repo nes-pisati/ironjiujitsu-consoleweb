@@ -1,4 +1,4 @@
-import React from "react";
+
 import AthleteForm from "../components/ui-components/forms/AthleteForm";
 import PageTitle from "../components/ui-components/PageTitle";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -31,9 +31,9 @@ export default function AddAthlete() {
                     btnText="Indietro"
                     onBtnClick={() => handleNavigate()}
                 />
-                <AthleteForm 
-                athleteId={id}
-                mode={isEditMode ? 'edit' : 'create'}
+                <AthleteForm
+                    athleteId={id}
+                    mode={isEditMode ? 'edit' : 'create'}
                 />
             </div>
         </>

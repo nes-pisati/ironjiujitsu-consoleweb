@@ -1,4 +1,4 @@
-import type { AdultBelts, Athlete, KidsBelts, Subscription, SubscriptionType } from "../src/types";
+import type { AdultBelts, KidsBelts } from "../src/types";
 import labels from "../src/assets/labels.json";
 
 type AllBelts = AdultBelts | KidsBelts;

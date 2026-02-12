@@ -9,7 +9,7 @@ export type AlertProps = {
 
 const DashAlertCard: React.FC<AlertProps> = ({ title, athleteName, isError, labelText }) => {
 
-    let style = "flex justify-between my-3 px-5 py-2 rounded-xl border border-2";
+    const style = "flex justify-between my-3 px-5 py-2 rounded-xl border border-2";
     let bgColor = "";
     let textColor = ""
 

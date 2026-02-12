@@ -1,4 +1,4 @@
-import { faCheck, faEnvelope, faEye, faPhone, faXmarkCircle, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faEye, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { AdultBelts, Athlete, KidsBelts } from "../../../types";
 import { useNavigate } from "react-router-dom";
@@ -21,11 +21,11 @@ export default function AthleteCard(props: Athlete) {
     const [expDate, setExpDate] = useState<Date | null>(null);
 
     useEffect(() => {
-      const fetchDate = async () => {
-        const date = await getSubscriptionExpDate(props._id);
-        setExpDate(date);
-      };
-      fetchDate();
+        const fetchDate = async () => {
+            const date = await getSubscriptionExpDate(props._id);
+            setExpDate(date);
+        };
+        fetchDate();
     }, [props._id]);
 
     type AllBelts = AdultBelts | KidsBelts;
@@ -94,7 +94,7 @@ export default function AthleteCard(props: Athlete) {
         return bgTranslation
     }
 
-    const getAthleteAge = (birthDate: Date): string | undefined => {
+    const getAthleteAge = (birthDate: Date | string): string | undefined => {
         if (!birthDate) return;
 
         const formatDate = new Date(birthDate);
@@ -106,7 +106,7 @@ export default function AthleteCard(props: Athlete) {
 
     const getSubscriptionExpDate = async (athleteId: string) => {
         const subscription = await getLastSubscriptionByAthlete(athleteId);
-        if(subscription) {
+        if (subscription) {
             return new Date(subscription.subscriptionExp)
         }
 
@@ -147,7 +147,7 @@ export default function AthleteCard(props: Athlete) {
             <div>
                 <div className="flex items-center justify-between py-5">
                     <p className="text-base text-gray-500">Abbonamento</p>
-                     <StateLabel date={expDate}/>
+                    <StateLabel date={expDate} />
                 </div>
                 <div className="flex items-center justify-between pb-5">
                     <p className="text-base text-gray-500">Certificato medico</p>
@@ -155,7 +155,7 @@ export default function AthleteCard(props: Athlete) {
                         <FontAwesomeIcon icon={faXmarkCircle} size="xs" color="white" />
                         <p className="text-xs text-white">assente</p>
                     </div> */}
-                    <StateLabel date={props.medicalCertificateExp}/>
+                    <StateLabel date={props.medicalCertificateExp} />
                 </div>
                 <div className="flex items-center justify-between">
                     <p className="text-base text-gray-500">Assicurazione</p>
@@ -163,7 +163,7 @@ export default function AthleteCard(props: Athlete) {
                         <FontAwesomeIcon icon={faXmarkCircle} size="xs" color="white" />
                         <p className="text-xs text-white">scaduta</p>
                     </div> */}
-                    <StateLabel date={props.ensuranceExp} feminine={true}/>
+                    <StateLabel date={props.ensuranceExp} feminine={true} />
                 </div>
             </div>
         </div>

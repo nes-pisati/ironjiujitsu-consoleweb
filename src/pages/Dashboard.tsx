@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAthleteContext } from "../context/AthleteContext";
 import DashResumeCard from "../components/ui-components/dashboard/DashResumeCard";
-import { faBell, faCreditCard, faStethoscope, faTriangleExclamation, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCreditCard, faStethoscope, faTriangleExclamation, faUser } from "@fortawesome/free-solid-svg-icons";
 import PageTitle from "../components/ui-components/PageTitle";
 import { useSubscriptionContext } from "../context/SubscriptionsContext";
 import { useNavigate } from "react-router-dom";

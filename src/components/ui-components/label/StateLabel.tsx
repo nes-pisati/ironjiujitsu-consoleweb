@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCheckCircle, faClock, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faClock, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 
 type LabelStateProps = {
   date: Date | null; 
@@ -8,7 +8,7 @@ type LabelStateProps = {
 };
 
 const StateLabel: React.FC<LabelStateProps> = ({ date, feminine = false }) => {
-  let style = "flex items-center gap-2 px-2 py-1 rounded-xl";
+  const style = "flex items-center gap-2 px-2 py-1 rounded-xl";
   let icon = faClock;
   let text = "Assente";
   let bgColor = "bg-yellow-500";

@@ -31,8 +31,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
     const { athletes, getAthlete } = useAthleteContext();
 
     const [subscriptionData, setSubscriptionData] = useState<Partial<Subscription> | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+
 
     const [monthAmount, setMonthAmount] = useState<number>();
     const [quaterlyAmount, setQuaterlyAmount] = useState<number>();
@@ -145,7 +144,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
 
     const handleSubmit = async (values: Subscription) => {
         try {
-            let saved;
+
             let discountedAmount;
 
             if (discount > 0) {
@@ -154,19 +153,19 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                 discountedAmount = values.amount
             }
 
-            if(isEditMode) {
-                    saved = await updateSubscription( subscriptionId, { ...values, amount: Number(discountedAmount) })
-                    setAlert({
-                        infos: {
-                            title: "Abbonamento aggiornato con successo",
-                            subtitle: "L'abbonamento è stato inserito correttamente.",
-                            isError: false,
-                            path: 'subscriptions'
-                        },
-                        showAlert: true
-                    })
+            if (isEditMode) {
+                await updateSubscription(subscriptionId, { ...values, amount: Number(discountedAmount) })
+                setAlert({
+                    infos: {
+                        title: "Abbonamento aggiornato con successo",
+                        subtitle: "L'abbonamento è stato inserito correttamente.",
+                        isError: false,
+                        path: 'subscriptions'
+                    },
+                    showAlert: true
+                })
             } else {
-                saved = await addSubscription(values.athleteId, { ...values, amount: Number(discountedAmount) })
+                await addSubscription(values.athleteId, { ...values, amount: Number(discountedAmount) })
                 setAlert({
                     infos: {
                         title: "Abbonamento aggiunto con successo",

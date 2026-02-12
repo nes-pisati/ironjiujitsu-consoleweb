@@ -11,7 +11,7 @@ export interface AthleteProfileProps {
     buttonIcon: IconDefinition
 }
 
-export default function AthleteProfileCard(props: AthleteProfileProps, width?: string) {
+export default function AthleteProfileCard(props: AthleteProfileProps) {
 
     return (
         <div className="border border-gray-300 p-8 rounded-xl h-auto flex flex-col justify-between">
@@ -25,8 +25,8 @@ export default function AthleteProfileCard(props: AthleteProfileProps, width?: s
                 </div>
             </div>
             <div className="pt-10">
-                <button className="border border-gray-40 w-full font-bold text-sm py-3 px-6 rounded-xl items-center gap-5 bg-black text-white flex justify-center hover:cursor-pointer" onClick={props.onButtonClick}> 
-                    <FontAwesomeIcon icon={props.buttonIcon} size="sm" color="white"/>
+                <button className="border border-gray-40 w-full font-bold text-sm py-3 px-6 rounded-xl items-center gap-5 bg-black text-white flex justify-center hover:cursor-pointer" onClick={props.onButtonClick}>
+                    <FontAwesomeIcon icon={props.buttonIcon} size="sm" color="white" />
                     {props.buttonText}
                 </button>
             </div>

@@ -1,4 +1,4 @@
-import { faEye, type IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { type IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface SubscriptionStatsCardProps {
