@@ -393,14 +393,14 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
     {
       name: 'name',
       type: 'text',
-      label: 'Nome',
+      label: 'Nome *',
       required: true,
       validation: (value: string) => value.length < 2 ? 'Nome deve avere almeno 2 caratteri' : undefined
     },
     {
       name: 'surname',
       type: 'text',
-      label: 'Cognome',
+      label: 'Cognome *',
       required: true,
       validation: (value: string) => value.length < 2 ? 'Cognome deve avere almeno 2 caratteri' : undefined
     },
@@ -432,14 +432,14 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
     {
       name: 'type',
       type: 'select',
-      label: 'Tipologia',
+      label: 'Tipologia *',
       required: true,
       options: typeOptions
     },
     {
       name: 'belt',
       type: 'select',
-      label: 'Cintura',
+      label: 'Cintura *',
       required: true,
       options: []
     },
@@ -452,7 +452,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
     {
       name: 'phoneNumber',
       type: 'text',
-      label: 'Numero di telefono',
+      label: 'Numero di telefono *',
       required: true,
       validation: (value) => {
         const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
@@ -468,14 +468,14 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
     {
       name: 'ensuranceType',
       type: 'select',
-      label: 'Tipologia Assicurazione',
+      label: 'Tipologia Assicurazione *',
       required: true,
       options: ensuranceOptions
     },
     {
       name: 'ensuranceStartDate',
       type: 'date',
-      label: 'Data attivazione assicurazione',
+      label: 'Data attivazione assicurazione *',
       required: true
     },
   ];
