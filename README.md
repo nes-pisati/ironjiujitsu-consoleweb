@@ -1,69 +1,26 @@
-# React + TypeScript + Vite
+# 🥊 Iron Jiu Jitsu - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **Status:** 🟢 Live & In Production  
+> **Upcoming Features:** Accounting module & subscription history analytics.
 
-Currently, two official plugins are available:
+Iron Jiu Jitsu is a production-grade web console designed to digitize gym operations, automate member management, and streamline communication for Jiu Jitsu academies.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 Key Features
+* **Member Management:** Comprehensive athlete database with real-time tracking of medical certificates, insurance status, and automated expiration alerts. Streamlined interface for managing athlete profiles with visual alerts for expiring medical certificates and insurance.
+* **Smart Subscriptions:** End-to-end management of gym plans, including custom pricing and automated status overviews (Active/Expired).
+* **WhatsApp Automation:** Integrated with **Official Meta APIs** to automatically send payment reminders and expiration notices directly to athletes' phones.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
+* **Framework:** React
+* **Styling:** Tailwind CSS
+* **State Management:** Context API
+* **Communication:** WhatsApp Business API (Meta)
+* **Icons:** FontAwesome
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🔗 Project Ecosystem
+This frontend communicates with a dedicated Node.js server.
+* **Backend Repository:** https://github.com/nes-pisati/ironjiujitsu-server
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 👤 Author
+**Vanessa Pisati** - Junior Frontend Developer
+* LinkedIn: https://www.linkedin.com/in/nes-pisati
