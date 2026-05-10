@@ -72,7 +72,7 @@ export default function Dashboard() {
                                 <p className="text-2xl font-semibold">Allerte prioritarie abbonamenti</p>
                             </div>
                             <p className="text-gray-500 text-base pt-2 mb-3">Alcuni abbonamenti sono in scadenza</p>
-                            <div className="overflow-y-scroll h-90 pb-6">
+                            <div className="overflow-y-scroll h-95 pb-6">
                                 {expiredSubscriptionsList.map((subscription) => (
                                     <DashAlertCard key={subscription.athleteName} title="Abbonamento scaduto" athleteName={subscription.athleteName} isError={true} labelText={`${subscription.daysExpired} giorni fa`} />
                                 ))}

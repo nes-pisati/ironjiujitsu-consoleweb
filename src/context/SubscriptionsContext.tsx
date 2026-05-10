@@ -20,6 +20,8 @@ interface SubscriptionsContextType {
   updateSubscription: (id: string, subscription: Partial<Subscription>) => Promise<void>;
   monthlySubscriptionsCount: number;
   quarterlySubscriptionsCount: number;
+  semesterlySubscriptionsCount: number;
+  packsCount: number;
   monthEarning: number;
   expiredSubscriptionsCount: number;
   getSubscriptionById: (id: string) => Promise<Subscription | null>;
@@ -40,6 +42,8 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   const [expiredSubscriptionsCount, setExpiredSubscriptionsCount] = useState<number>(0);
   const [monthlySubscriptionsCount, setMonthlySubscriptionsCount] = useState<number>(0);
   const [quarterlySubscriptionsCount, setQuarterlySubscriptionsCount] = useState<number>(0);
+  const [semesterlySubscriptionsCount, setSemesterlySubscriptionsCount] = useState<number>(0);
+  const [packsCount, setPacksCount] = useState<number>(0);
   const [expiredSubscriptionsList, setExpiredSubscriptionsList] = useState<ExpiredSubscriptionDetail[]>([]);
 
   const { athletes } = useAthleteContext();
@@ -124,6 +128,8 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
 
     const monthlyCount = subscriptions.filter(s => s.type === 'month' && new Date(s.subscriptionExp) > now).length;
     const quarterlyCount = subscriptions.filter(s => s.type === 'quarterly' && new Date(s.subscriptionExp) > now).length;
+    const semesterlyCount = subscriptions.filter(s => s.type === 'sixmonth' && new Date(s.subscriptionExp) > now).length;
+    const packsCount = subscriptions.filter(s => s.type === '10entrance').length;
     const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now);
     const monthEarn = subscriptions
       .filter(s => {
@@ -134,6 +140,8 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
 
     setMonthlySubscriptionsCount(monthlyCount);
     setQuarterlySubscriptionsCount(quarterlyCount);
+    setSemesterlySubscriptionsCount(semesterlyCount);
+    setPacksCount(packsCount);
     setExpiredSubscriptionsCount(expired.length);
     setMonthEarning(monthEarn);
     getExpiredSubscriptionslist();
@@ -198,6 +206,8 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
       updateSubscription,
       monthlySubscriptionsCount,
       quarterlySubscriptionsCount,
+      semesterlySubscriptionsCount,
+      packsCount,
       getSubscriptionById,
       expiredSubscriptionsList
     }}>
