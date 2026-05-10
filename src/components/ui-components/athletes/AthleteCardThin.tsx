@@ -1,8 +1,7 @@
-import { faEnvelope, faEye, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { AdultBelts, Athlete, KidsBelts } from "../../../types";
 import { useNavigate } from "react-router-dom";
-import StateLabel from "../label/StateLabel";
 import { useSubscriptionContext } from "../../../context/SubscriptionsContext";
 import { useState, useEffect } from "react";
 
