@@ -5,6 +5,11 @@ import { useAthleteContext } from "../context/AthleteContext";
 import { useNavigate } from "react-router-dom";
 import type { AthleteType, AdultBelts, KidsBelts } from "../types";
 import { adultBeltsOptions, kidsBeltsOptions, typeOptions } from "../components/ui-components/forms/Options";
+import AthleteCardThin from "../components/ui-components/athletes/AthleteCardThin";
+import { faGrip, faList } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+type DisplayType = 'list' | 'grid'
 
 export default function AthletesList() {
 
@@ -13,6 +18,7 @@ export default function AthletesList() {
     const [searchAthlete, setSearchAthlete] = useState<string>('');
     const [beltOption, setBeltOption] = useState<AdultBelts | KidsBelts>();
     const [typeOption, setTypeOption] = useState<AthleteType>();
+    const [display, setDisplay] = useState<DisplayType>('list');
 
     const handleNavigate = () => {
         navigate('/athlete/add')
@@ -25,24 +31,24 @@ export default function AthletesList() {
 
     const filteredAthletes = useMemo(() => {
         const search = searchAthlete.trim().toLowerCase();
-    
+
         return athletes.filter(a => {
-          if (search) {
-            const fullName = `${a.name ?? ''} ${a.surname ?? ''}`.toLowerCase();
-            if (!fullName.includes(search)) return false;
-          }
-    
-          if (typeOption) {
-            if (a.type !== typeOption) return false;
-          }
-    
-          if (beltOption) {
-            if (a.belt !== beltOption) return false;
-          }
-    
-          return true;
+            if (search) {
+                const fullName = `${a.name ?? ''} ${a.surname ?? ''}`.toLowerCase();
+                if (!fullName.includes(search)) return false;
+            }
+
+            if (typeOption) {
+                if (a.type !== typeOption) return false;
+            }
+
+            if (beltOption) {
+                if (a.belt !== beltOption) return false;
+            }
+
+            return true;
         });
-      }, [athletes, searchAthlete, typeOption, beltOption]);
+    }, [athletes, searchAthlete, typeOption, beltOption]);
 
     return (
         <>
@@ -52,7 +58,7 @@ export default function AthletesList() {
                     <button className="bg-black  text-white text-sm font-bold py-4 px-6 rounded-2xl" onClick={() => handleNavigate()}>Aggiungi atleta</button>
                 </div>
                 {/* FILTRI */}
-                <div className="pt-10 grid grid-cols-3 gap-4">
+                <div className="pt-10 grid grid-cols-[1fr_1fr_1fr_2rem] items-center gap-4">
                     <input
                         type="text"
                         placeholder="Inserisci nome atleta..."
@@ -92,10 +98,15 @@ export default function AthletesList() {
                             </option>
                         )}
                     </select>
+                    <button onClick={() => setDisplay(display === 'list' ? 'grid' : 'list')}>
+                        <FontAwesomeIcon icon={display === 'list' ? faList : faGrip} size="sm" />
+                    </button>
                 </div>
-                <div className="grid grid-cols-3 py-12 gap-6">
+                <div className={display === 'grid' ? "grid grid-cols-3 py-12 gap-6" : "flex flex-col py-12 gap-3"}>
                     {filteredAthletes.map((athlete) => (
-                        <AthleteCard key={athlete._id} {...athlete} />
+                        display === 'grid'
+                            ? <AthleteCard key={athlete._id} {...athlete} />
+                            : <AthleteCardThin key={athlete._id} {...athlete} />
                     ))}
                 </div>
             </div>
