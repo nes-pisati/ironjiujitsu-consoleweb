@@ -1,12 +1,47 @@
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faStethoscope, faCreditCard, faFileMedical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { AdultBelts, Athlete, KidsBelts } from "../../../types";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSubscriptionContext } from "../../../context/SubscriptionsContext";
 
 
 export default function AthleteCardThin(props: Athlete) {
 
     const navigate = useNavigate();
+    const { getLastSubscriptionByAthlete } = useSubscriptionContext();
+    const [subExpDate, setSubExpDate] = useState<Date | null | undefined>(undefined);
+
+    useEffect(() => {
+        const fetchSub = async () => {
+            const sub = await getLastSubscriptionByAthlete(props._id);
+            setSubExpDate(sub ? new Date(sub.subscriptionExp) : null);
+        };
+        fetchSub();
+    }, [props._id]);
+
+    const now = new Date();
+
+    const getMedicalStatus = (): 'ok' | 'absent' | 'expired' => {
+        if (!props.medicalCertificate || !props.medicalCertificateExp) return 'absent';
+        return new Date(props.medicalCertificateExp) < now ? 'expired' : 'ok';
+    };
+
+    const getEnsuranceStatus = (): 'ok' | 'absent' | 'expired' => {
+        if (!props.ensurance || !props.ensuranceExp) return 'absent';
+        return new Date(props.ensuranceExp) < now ? 'expired' : 'ok';
+    };
+
+    const getSubscriptionStatus = (): 'ok' | 'absent' | 'expired' => {
+        if (subExpDate === undefined || subExpDate === null) return 'absent';
+        return subExpDate < now ? 'expired' : 'ok';
+    };
+
+    const getCircleBg = (status: 'ok' | 'absent' | 'expired'): string => {
+        if (status === 'absent') return 'bg-yellow-500';
+        if (status === 'expired') return 'bg-red-500';
+        return '';
+    };
 
     const handleNavigate = (uid: string) => {
         navigate(`/athlete/${uid}`)
@@ -101,10 +136,27 @@ export default function AthleteCardThin(props: Athlete) {
                     </div>
                 </div>
             </div>
-            <div className="py-2 px-3 rounded-xl transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer">
-                <button onClick={() => handleNavigate(props._id)}>
-                    <FontAwesomeIcon icon={faEye} size="sm" />
-                </button>
+            <div className="flex items-center gap-2">
+                {(getMedicalStatus() !== 'ok') && (
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getMedicalStatus())}`}>
+                        <FontAwesomeIcon icon={faStethoscope} size="xs" color="white" />
+                    </div>
+                )}
+                {(getEnsuranceStatus() !== 'ok') && (
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getEnsuranceStatus())}`}>
+                        <FontAwesomeIcon icon={faFileMedical} size="xs" color="white" />
+                    </div>
+                )}
+                {(subExpDate !== undefined && getSubscriptionStatus() !== 'ok') && (
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getSubscriptionStatus())}`}>
+                        <FontAwesomeIcon icon={faCreditCard} size="xs" color="white" />
+                    </div>
+                )}
+                <div className="py-2 px-3 rounded-xl transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer">
+                    <button onClick={() => handleNavigate(props._id)}>
+                        <FontAwesomeIcon icon={faEye} size="sm" />
+                    </button>
+                </div>
             </div>
         </div>
     )
