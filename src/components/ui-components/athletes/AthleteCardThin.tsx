@@ -2,9 +2,6 @@ import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { AdultBelts, Athlete, KidsBelts } from "../../../types";
 import { useNavigate } from "react-router-dom";
-import { useSubscriptionContext } from "../../../context/SubscriptionsContext";
-import { useState, useEffect } from "react";
-
 
 
 export default function AthleteCardThin(props: Athlete) {
@@ -14,18 +11,6 @@ export default function AthleteCardThin(props: Athlete) {
     const handleNavigate = (uid: string) => {
         navigate(`/athlete/${uid}`)
     }
-
-    const { getLastSubscriptionByAthlete } = useSubscriptionContext();
-
-    const [expDate, setExpDate] = useState<Date | null>(null);
-
-    useEffect(() => {
-        const fetchDate = async () => {
-            const date = await getSubscriptionExpDate(props._id);
-            setExpDate(date);
-        };
-        fetchDate();
-    }, [props._id]);
 
     type AllBelts = AdultBelts | KidsBelts;
 
@@ -101,15 +86,6 @@ export default function AthleteCardThin(props: Athlete) {
         const thisYear = new Date().getFullYear();
         const age = thisYear - birthYear
         return age.toString()
-    }
-
-    const getSubscriptionExpDate = async (athleteId: string) => {
-        const subscription = await getLastSubscriptionByAthlete(athleteId);
-        if (subscription) {
-            return new Date(subscription.subscriptionExp)
-        }
-
-        return null
     }
 
     return (
