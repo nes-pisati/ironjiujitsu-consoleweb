@@ -17,7 +17,7 @@ export interface Athlete {
     name: string,
     surname: string,
     birthDate: string,
-    fiscalCode: string,
+    fiscalCode?: string,
     email: string,
     gender: GenderType,
     phoneNumber: string,
