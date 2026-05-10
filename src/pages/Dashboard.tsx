@@ -65,21 +65,21 @@ export default function Dashboard() {
                     </div>
                 </div>
                 <div className=" grid grid-cols-4 gap-5">
-                    <div className="w-auto rounded-2xl h-60 min-h-100 border border-gray-300 p-7 flex flex-col justify-between col-span-2 overflow-y-hidden">
+                    <div className="w-auto rounded-2xl border border-gray-300 p-7 flex flex-col col-span-2">
                         <div>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faTriangleExclamation} size="lg" color="red" />
                                 <p className="text-2xl font-semibold">Allerte prioritarie abbonamenti</p>
                             </div>
                             <p className="text-gray-500 text-base pt-2 mb-3">Alcuni abbonamenti sono in scadenza</p>
-                            <div className="overflow-y-scroll h-80">
+                            <div className="overflow-y-scroll h-80 pb-6">
                                 {expiredSubscriptionsList.map((subscription) => (
                                     <DashAlertCard key={subscription.athleteName} title="Abbonamento scaduto" athleteName={subscription.athleteName} isError={true} labelText={`${subscription.daysExpired} giorni fa`} />
                                 ))}
                             </div>
                         </div>
                     </div>
-                    <div className="w-auto rounded-2xl h-60 min-h-100 border border-gray-300 p-7 flex flex-col justify-between col-span-2 overflow-y-hidden">
+                    <div className="w-auto rounded-2xl border border-gray-300 p-7 flex flex-col col-span-2">
                         <div>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faStethoscope} size="lg" color="black" />
@@ -90,7 +90,7 @@ export default function Dashboard() {
                                 <button className="border-gray-400 border-1 text-black text-sm font-semibold py-1 px-6 rounded-lg hover:bg-black hover:text-white transition-all duration-500 ease-in-out" onClick={() => setMedicalCertificateStatus(MedicalCertificateStatus.EXPIRED)}>Scaduti</button>
                                 <button className="border-gray-400 border-1 text-black text-sm font-semibold py-1 px-6 rounded-lg hover:bg-black hover:text-white transition-all duration-500 ease-in-out" onClick={() => setMedicalCertificateStatus(MedicalCertificateStatus.ABSENT)}>Assenti</button>
                             </div>
-                            <div className="overflow-y-scroll h-80">
+                            <div className="overflow-y-scroll h-80 pb-6">
                                 {medicalCertificateStatus === MedicalCertificateStatus.EXPIRED && expiredMedicalCertificateAthleteList.map((athlete) => (
                                     <DashAlertCard key={athlete._id} title="Certificato medico scaduto" athleteName={`${athlete.name} ${athlete.surname}`} isError={true} />
                                 ))}
