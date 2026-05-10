@@ -35,6 +35,8 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
 
     const [monthAmount, setMonthAmount] = useState<number>();
     const [quaterlyAmount, setQuaterlyAmount] = useState<number>();
+    const [sixMonthAmount] = useState<number>(390);
+    const [tenEntranceAmount] = useState<number>(100);
     const [discount, setDiscount] = useState<number>(0);
 
     const [alert, setAlert] = useState<AlertHandler>({
@@ -50,6 +52,8 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
     const subscriptionTypeOptions = [
         { value: 'month', label: `Mensile - ${monthAmount} €` },
         { value: 'quarterly', label: `Trimestrale - ${quaterlyAmount} €` },
+        { value: 'sixmonth', label: `Semestrale - ${sixMonthAmount} €` },
+        { value: '10entrance', label: `Pacchetto 10 Ingressi - ${tenEntranceAmount} €` },
     ]
 
     const paymentTypeOptions = [
@@ -105,6 +109,12 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                 break;
             case 'quarterly':
                 end.setMonth(end.getMonth() + 3);
+                break;
+            case 'sixmonth':
+                end.setMonth(end.getMonth() + 6);
+                break;
+            case '10entrance':
+                end.setFullYear(end.getFullYear() + 1);
                 break;
         }
 
@@ -236,6 +246,10 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                     updateValue('amount', monthAmount);
                 } else if (value === 'quarterly') {
                     updateValue('amount', quaterlyAmount);
+                } else if (value === 'sixmonth') {
+                    updateValue('amount', sixMonthAmount);
+                } else if (value === '10entrance') {
+                    updateValue('amount', tenEntranceAmount);
                 }
             }
 
@@ -395,7 +409,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                         amount={values.amount ? calculateDiscount(values.amount, discount) + " €" : ""}
                         dates={values.date ? "dal " + formatDate(values.date) + " al " + formatDate(getSubscriptionExpFromStartDate(values.date, values.type)) : ""}
                         paymentMethod={values.paymentType ? getPaymentTypeLabel(values.paymentType) : ""}
-                        type={values.type ? values.type === 'month' ? 'Mensile' : 'Trimestrale' : ""}
+                        type={values.type ? ({ month: 'Mensile', quarterly: 'Trimestrale', sixmonth: 'Semestrale', '10entrance': 'Pacchetto 10 Ingressi' } as Record<string, string>)[values.type] ?? values.type : ""}
                     />
                 }
                 {

@@ -4,5 +4,7 @@
     "banktransfer": "Bonifico Bancario",
     "other": "Altro",
     "month": "Mensile",
-    "quarterly": "Trimestrale"
+    "quarterly": "Trimestrale",
+    "sixmonth": "Semestrale",
+    "10entrance": "Pacchetto 10 Ingressi"
 }
