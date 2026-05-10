@@ -145,7 +145,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     setExpiredSubscriptionsCount(expired.length);
     setMonthEarning(monthEarn);
     getExpiredSubscriptionslist();
-  }, [subscriptions, currentMonth]);
+  }, [subscriptions, athletes, currentMonth]);
 
   useEffect(() => {
     getAllSubscriptions();
