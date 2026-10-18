@@ -1,11 +1,17 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 import Sidebar from "./ui-components/Sidebar";
+import { TOKEN_KEY } from "../axiosSetup";
 
 interface LayoutProps {
     children: React.ReactNode
   }
   
   export default function Layout({ children }: LayoutProps) {
+    if (!localStorage.getItem(TOKEN_KEY)) {
+      return <Navigate to="/login" replace />;
+    }
+
     return (
         <div className="min-h-screen flex w-auto bg-background ml-60 overflow-y-hidden">
           <Sidebar />
