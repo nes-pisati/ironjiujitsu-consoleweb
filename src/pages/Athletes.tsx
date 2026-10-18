@@ -130,7 +130,7 @@ export default function AthletesList() {
                         onChange={(e) => setBeltOption(e.target.value as AdultBelts | KidsBelts)}
                     >
                         <option value="">Seleziona una cintura</option>
-                        {typeOption === 'kid' && kidsBeltsOptions.map(option => (
+                        {typeOption === 'kids' && kidsBeltsOptions.map(option => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
