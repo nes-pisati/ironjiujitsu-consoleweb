@@ -4,11 +4,25 @@ import type { AdultBelts, Athlete, KidsBelts } from "../../../types";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSubscriptionContext } from "../../../context/SubscriptionsContext";
+import { useAthleteContext } from "../../../context/AthleteContext";
 
 
-export default function AthleteCardThin(props: Athlete) {
+export default function AthleteCardThin(props: Athlete & { showRestore?: boolean }) {
 
     const navigate = useNavigate();
+
+    const { setAthleteArchived } = useAthleteContext();
+    const [restoreError, setRestoreError] = useState<string | null>(null);
+
+    const handleRestore = async () => {
+        setRestoreError(null);
+        try {
+            await setAthleteArchived(props._id, false);
+        } catch (error) {
+            console.error("Errore nel ripristino dell'atleta", error);
+            setRestoreError("Errore nel ripristino dell'atleta, riprova");
+        }
+    }
     const { getLastSubscriptionByAthlete } = useSubscriptionContext();
     const [subExpDate, setSubExpDate] = useState<Date | null | undefined>(undefined);
 
@@ -135,6 +149,7 @@ export default function AthleteCardThin(props: Athlete) {
                         <p className="text-base text-gray-500">{getBeltTranslation(props.belt)}</p>
                     </div>
                 </div>
+                {restoreError && <p className="pt-1 text-sm text-red-700">{restoreError}</p>}
             </div>
             <div className="flex items-center gap-2">
                 {(getMedicalStatus() !== 'ok') && (
@@ -152,6 +167,14 @@ export default function AthleteCardThin(props: Athlete) {
                         <FontAwesomeIcon icon={faCreditCard} size="xs" color="white" />
                     </div>
                 )}
+                {props.showRestore &&
+                    <button
+                        className="border border-gray-400 rounded-xl py-1.5 px-3 text-sm font-semibold transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer"
+                        onClick={handleRestore}
+                    >
+                        Ripristina
+                    </button>
+                }
                 <div className="py-2 px-3 rounded-xl transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer">
                     <button onClick={() => handleNavigate(props._id)}>
                         <FontAwesomeIcon icon={faEye} size="sm" />

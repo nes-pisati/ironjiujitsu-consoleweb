@@ -22,6 +22,7 @@ function App() {
               <Routes>
                 <Route path='/' element={<Layout><Dashboard /></Layout>} />
                 <Route path='/athletes' element={<Layout><AthletesList /></Layout>} />
+                <Route path='/athletes/archive' element={<Layout><AthletesList key='archive' archived /></Layout>} />
                 <Route path='/athlete/add' element={<Layout><AddAthlete /></Layout>} />
                 <Route path='/athlete/edit/:id' element={<Layout><AddAthlete /></Layout>} />
                 <Route path='/athlete/:id' element={<Layout><AthleteProfile /></Layout>} />

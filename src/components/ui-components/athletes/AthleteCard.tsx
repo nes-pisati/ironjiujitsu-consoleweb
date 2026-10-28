@@ -5,12 +5,26 @@ import { useNavigate } from "react-router-dom";
 import StateLabel from "../label/StateLabel";
 import { useSubscriptionContext } from "../../../context/SubscriptionsContext";
 import { useState, useEffect } from "react";
+import { useAthleteContext } from "../../../context/AthleteContext";
 
 
 
-export default function AthleteCard(props: Athlete) {
+export default function AthleteCard(props: Athlete & { showRestore?: boolean }) {
 
     const navigate = useNavigate();
+
+    const { setAthleteArchived } = useAthleteContext();
+    const [restoreError, setRestoreError] = useState<string | null>(null);
+
+    const handleRestore = async () => {
+        setRestoreError(null);
+        try {
+            await setAthleteArchived(props._id, false);
+        } catch (error) {
+            console.error("Errore nel ripristino dell'atleta", error);
+            setRestoreError("Errore nel ripristino dell'atleta, riprova");
+        }
+    }
 
     const handleNavigate = (uid: string) => {
         navigate(`/athlete/${uid}`)
@@ -126,11 +140,22 @@ export default function AthleteCard(props: Athlete) {
                                 <p className="text-base text-gray-500">{getBeltTranslation(props.belt)}</p>
                             </div>
                         </div>
+                        {restoreError && <p className="pt-2 text-sm text-red-700">{restoreError}</p>}
                     </div>
-                    <div className="border border-gray-400 rounded-xl py-2 px-3 transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer">
-                        <button onClick={() => handleNavigate(props._id)}>
-                            <FontAwesomeIcon icon={faEye} size="sm" />
-                        </button>
+                    <div className="flex items-center gap-2">
+                        {props.showRestore &&
+                            <button
+                                className="border border-gray-400 rounded-xl py-1.5 px-3 text-sm font-semibold transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer"
+                                onClick={handleRestore}
+                            >
+                                Ripristina
+                            </button>
+                        }
+                        <div className="border border-gray-400 rounded-xl py-2 px-3 transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer">
+                            <button onClick={() => handleNavigate(props._id)}>
+                                <FontAwesomeIcon icon={faEye} size="sm" />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div>

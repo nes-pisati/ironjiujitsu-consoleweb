@@ -13,9 +13,14 @@ import * as XLSX from "xlsx";
 
 type DisplayType = 'list' | 'grid'
 
-export default function AthletesList() {
+interface AthletesListProps {
+    archived?: boolean;
+}
 
-    const { athletes } = useAthleteContext();
+export default function AthletesList({ archived = false }: AthletesListProps) {
+
+    const { athletes: activeAthletes, archivedAthletes } = useAthleteContext();
+    const athletes = archived ? archivedAthletes : activeAthletes;
     const { subscriptions } = useSubscriptionContext();
     const navigate = useNavigate();
     const [searchAthlete, setSearchAthlete] = useState<string>('');
@@ -93,17 +98,23 @@ export default function AthletesList() {
         <>
             <div className="pe-12">
                 <div className="flex items-center justify-between">
-                    <PageTitle title="Atleti" subtitle="Gestisci i membri della squadra" btnVisible={false} />
-                    <div className="flex items-center gap-3">
-                        <button
-                            className="flex items-center gap-2 border border-gray-300 text-sm font-bold py-4 px-6 rounded-2xl hover:bg-gray-50 transition-colors"
-                            onClick={handleExportExcel}
-                        >
-                            <FontAwesomeIcon icon={faFileExcel} size="sm" />
-                            Esporta Excel
-                        </button>
-                        <button className="bg-black text-white text-sm font-bold py-4 px-6 rounded-2xl" onClick={() => handleNavigate()}>Aggiungi atleta</button>
-                    </div>
+                    <PageTitle
+                        title={archived ? "Archivio atleti" : "Atleti"}
+                        subtitle={archived ? "Atleti archiviati che non frequentano più la palestra" : "Gestisci i membri della squadra"}
+                        btnVisible={false}
+                    />
+                    {!archived &&
+                        <div className="flex items-center gap-3">
+                            <button
+                                className="flex items-center gap-2 border border-gray-300 text-sm font-bold py-4 px-6 rounded-2xl hover:bg-gray-50 transition-colors"
+                                onClick={handleExportExcel}
+                            >
+                                <FontAwesomeIcon icon={faFileExcel} size="sm" />
+                                Esporta Excel
+                            </button>
+                            <button className="bg-black text-white text-sm font-bold py-4 px-6 rounded-2xl" onClick={() => handleNavigate()}>Aggiungi atleta</button>
+                        </div>
+                    }
                 </div>
                 {/* FILTRI */}
                 <div className="pt-10 grid grid-cols-[1fr_1fr_1fr_2rem] items-center gap-4">
@@ -150,11 +161,14 @@ export default function AthletesList() {
                         <FontAwesomeIcon icon={display === 'list' ? faList : faGrip} size="sm" />
                     </button>
                 </div>
+                {archived && athletes.length === 0 &&
+                    <p className="pt-12 text-base text-gray-500">Nessun atleta archiviato</p>
+                }
                 <div className={display === 'grid' ? "grid grid-cols-3 py-12 gap-6" : "flex flex-col py-12 gap-3"}>
                     {filteredAthletes.map((athlete) => (
                         display === 'grid'
-                            ? <AthleteCard key={athlete._id} {...athlete} />
-                            : <AthleteCardThin key={athlete._id} {...athlete} />
+                            ? <AthleteCard key={athlete._id} {...athlete} showRestore={archived} />
+                            : <AthleteCardThin key={athlete._id} {...athlete} showRestore={archived} />
                     ))}
                 </div>
             </div>

@@ -28,7 +28,7 @@ type LocationState = { //serve a recuperare l'id dell'atleta in caso di aggiunta
 export default function SubscriptionForm({ subscriptionId, mode = 'create' }: SubscriptionFormProps) {
 
     const { addSubscription, getSubscriptionById, updateSubscription } = useSubscriptionContext();
-    const { athletes, getAthlete } = useAthleteContext();
+    const { athletes, archivedAthletes, getAthlete } = useAthleteContext();
 
     const [subscriptionData, setSubscriptionData] = useState<Partial<Subscription> | null>(null);
 
@@ -201,8 +201,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
     }
 
     const getAthletNameAndSurname = (id: string): string => {
-        if (!athletes || athletes.length === 0) return "Nessun atleta trovato";
-        const athlete = athletes.find((ath: Athlete) => ath._id === id);
+        const athlete = [...athletes, ...archivedAthletes].find((ath: Athlete) => ath._id === id);
         return athlete ? `${athlete.name} ${athlete.surname}` : "Nessun atleta trovato";
     };
 
