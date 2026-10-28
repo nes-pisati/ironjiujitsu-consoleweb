@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { User } from "../types";
 import axios from "axios";
+import { TOKEN_KEY } from "../axiosSetup";
 
 interface UserContextType {
     user: User | null;
@@ -29,12 +30,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         try {
             const response = await axios.post(`${apiUrl}/user/login`, user);
             console.log("User login response -> ", response.data);
-            localStorage.setItem('creatorLogin', response.data.token);
+            localStorage.setItem(TOKEN_KEY, response.data.token);
             // setUser(response.data);
             return response.data;
         } catch (error) {
             console.error('Errore nel login:', error);
-            setError('Errore nel login');
+            setError(axios.isAxiosError(error) && error.response?.status === 401
+                ? 'Username o password non validi'
+                : 'Errore nel login, riprova più tardi');
             return null;
         } finally {
             setLoading(false);

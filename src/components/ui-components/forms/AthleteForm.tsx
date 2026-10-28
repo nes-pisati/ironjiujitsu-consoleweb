@@ -248,7 +248,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
             <div className="pb-6">
               <div className="flex items-center gap-8 pb-2">
                 <FontAwesomeIcon icon={faUser} size="sm" />
-                <p className="text-2xl font-semibold text-gray-800">Informazioni Personali</p>
+                <p className="text-lg font-semibold text-gray-800">Informazioni Personali</p>
               </div>
               <p className="text-md text-gray-400">Dati anagrafici dell'atleta</p>
             </div>
@@ -306,7 +306,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
             {!values.type && (
               <div className="mb-4">
-                <label className="block text-l font-medium text-gray-700 mb-3">
+                <label className="block text-xs font-semibold text-gray-700 pb-1 mb-1">
                   Cintura
                   <span className="text-black ml-1">*</span>
                 </label>
@@ -320,7 +320,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
             <div className="pb-6">
               <div className="flex items-center gap-8 pb-2">
                 <FontAwesomeIcon icon={faPhone} size="sm" />
-                <p className="text-2xl font-semibold text-gray-800">Contatti</p>
+                <p className="text-lg font-semibold text-gray-800">Contatti</p>
               </div>
               <p className="text-md text-gray-400">Informazioni di contatto</p>
             </div>
@@ -344,7 +344,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
             <div className="pb-6">
               <div className="flex items-center gap-8 pb-2">
                 <FontAwesomeIcon icon={faStethoscope} size="sm" />
-                <p className="text-2xl font-semibold text-gray-800">Certificato Medico</p>
+                <p className="text-lg font-semibold text-gray-800">Certificato Medico</p>
               </div>
               <p className="text-md text-gray-400">Registrazione del certificato</p>
             </div>
@@ -362,7 +362,7 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
             <div className="pb-6">
               <div className="flex items-center gap-8 pb-2">
                 <FontAwesomeIcon icon={faFileMedical} size="sm" />
-                <p className="text-2xl font-semibold text-gray-800">Assicurazione</p>
+                <p className="text-lg font-semibold text-gray-800">Assicurazione</p>
               </div>
               <p className="text-md text-gray-400">Inserimento assicurazione</p>
             </div>

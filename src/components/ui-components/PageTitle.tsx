@@ -17,15 +17,15 @@ export default function PageTitle(props: PageTitleProps) {
             <div className="pe-12">
                 <div className="flex items-center gap-8">
                     {props.btnVisible &&
-                        <button className="border border-gray-400 font-bold text-base py-4 px-4 rounded-2xl flex items-center gap-5 hover:cursor-pointer transition-all duration-100 ease-in hover:bg-black hover:text-white"
+                        <button className="border border-gray-400 font-bold text-sm py-2.5 px-4 rounded-xl flex items-center gap-3 hover:cursor-pointer transition-all duration-100 ease-in hover:bg-black hover:text-white"
                             onClick={props.onBtnClick}>
                             <FontAwesomeIcon icon={props.btnIcon!} size="sm" />
                             {props.btnText}
                         </button>
                     }
                     <div>
-                        <h1 className="text-3xl py-1 font-bold">{props.title}</h1>
-                        <p className="text-xl text-gray-500">{props.subtitle}</p>
+                        <h1 className="text-2xl font-bold">{props.title}</h1>
+                        <p className="text-base text-gray-500">{props.subtitle}</p>
                     </div>
                 </div>
 

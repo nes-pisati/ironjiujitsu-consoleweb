@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
+import { useAthleteContext } from "../context/AthleteContext";
+import { useSubscriptionContext } from "../context/SubscriptionsContext";
 import type { User } from "../types";
 
 export default function Login() {
@@ -8,7 +10,9 @@ export default function Login() {
 
     const [login, setLogin] = useState<User>({ username: '', password: '' })
     const navigate = useNavigate()
-    const { userLogin } = useUserContext();
+    const { userLogin, error } = useUserContext();
+    const { getAllAthletes } = useAthleteContext();
+    const { getAllSubscriptions } = useSubscriptionContext();
 
     const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -24,7 +28,8 @@ export default function Login() {
         if (login.username && login.password) {
             const response = await userLogin(login);
             console.log("response -> ", response);
-            if (response.token) {
+            if (response?.token) {
+                await Promise.all([getAllAthletes(), getAllSubscriptions()]);
                 navigate('/');
             }
         }
@@ -48,6 +53,9 @@ export default function Login() {
                                     <label className="block mb-2 text-sm font-medium text-white">Password</label>
                                     <input type="password" name="password" id="password" className="border border-zinc-600 text-white rounded-lg block w-full p-2.5 bg-zinc-700 placeholder-gray-400 focus:outline-none" onChange={onChangeInput} />
                                 </div>
+                                {error && (
+                                    <p className="text-sm text-red-400" role="alert">{error}</p>
+                                )}
                                 <button type="submit" className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 align-baseline" onClick={handleSubmit}>Login</button>
                             </form>
                         </div>

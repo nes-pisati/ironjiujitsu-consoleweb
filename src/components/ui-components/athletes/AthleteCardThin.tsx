@@ -127,7 +127,7 @@ export default function AthleteCardThin(props: Athlete) {
         <div className="w-auto rounded-2xl border border-gray-300 py-4 px-6 flex items-center justify-between">
             <div>
                 {/* */}
-                <p className="text-xl font-semibold pb-1">{props.name + ' ' + props.surname} </p>
+                <p className="text-lg font-semibold pb-1">{props.name + ' ' + props.surname} </p>
                 <div className="flex items-center gap-5">
                     <p className="text-base text-gray-500">{getAthleteAge(props.birthDate) + ' anni'}</p>
                     <div className="flex items-center gap-2">

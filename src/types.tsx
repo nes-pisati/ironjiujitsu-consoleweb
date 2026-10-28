@@ -3,10 +3,10 @@ export type KidsBelts = 'white' | 'greywhite' | 'grey' | 'greyblack' |
     'yellowwhite' | 'yellow' | 'yellowblack' |
     'orangewhite' | 'orange' | 'orangeblack' |
     'greenwhite' | 'green' | 'greenblack';
-export type AthleteType = 'kid' | 'adult';
+export type AthleteType = 'kids' | 'adult';
 
 export type SubscriptionType = 'month' | 'quarterly' | 'sixmonth' | '10entrance';
-export type PaymentType = 'banktransfer' | 'cash' | 'paypal';
+export type PaymentType = 'banktransfer' | 'cash' | 'paypal' | 'other';
 export type EnsuranceType = 'A' | 'B';
 export type GenderType = 'M' | 'F'
 

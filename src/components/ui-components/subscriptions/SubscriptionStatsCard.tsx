@@ -17,7 +17,7 @@ export default function SubscriptionStatsCard(props: SubscriptionStatsCardProps)
                 <FontAwesomeIcon icon={props.icon} size="sm" color="gray" />
             </div>
             <div className="pt-8">
-                <p className={`font-semibold text-4xl ${props.textColor ?? ''}`}>{props.count}</p>
+                <p className={`font-semibold text-3xl ${props.textColor ?? ''}`}>{props.count}</p>
                 <p className="pt-2 text-base text-gray-500">{props.subtitle}</p>
             </div>
         </div>
