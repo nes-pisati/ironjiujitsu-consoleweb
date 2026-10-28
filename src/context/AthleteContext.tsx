@@ -1,15 +1,17 @@
-import React, { createContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useState, useEffect, useMemo, type ReactNode } from 'react';
 import axios from 'axios';
 import type { Athlete } from '../types';
 
 interface AthleteContextType {
     athletes: Athlete[];
+    archivedAthletes: Athlete[];
     loading: boolean;
     error: string | null;
     addAthlete: (athlete: Omit<Athlete, '_id'>) => Promise<void>;
     getAthlete: (id: string) => Promise<Athlete | null>;
     editAthlete: (id: string, athlete: Partial<Athlete>) => Promise<void>;
     deleteAthlete: (id: string) => Promise<void>;
+    setAthleteArchived: (id: string, archived: boolean) => Promise<Athlete>;
     getAllAthletes: () => Promise<void>;
     noMedicalCertificateAthleteList: Athlete[];
     expiredMedicalCertificateAthleteList: Athlete[];
@@ -22,13 +24,16 @@ interface AthleteProviderProps {
 }
 
 export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) => {
-    const [athletes, setAthletes] = useState<Athlete[]>([]);
+    const [allAthletes, setAthletes] = useState<Athlete[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [noMedicalCertificateAthleteList, setNoMedicalCertificateAthleteList] = useState<Athlete[]>([]);
     const [expiredMedicalCertificateAthleteList, setExpiredMedicalCertificateAthleteList] = useState<Athlete[]>([]);
 
     const apiUrl = import.meta.env.VITE_API_URL;
+
+    const athletes = useMemo(() => allAthletes.filter(a => !a.archived), [allAthletes]);
+    const archivedAthletes = useMemo(() => allAthletes.filter(a => a.archived), [allAthletes]);
 
     const getAllAthletes = async () => {
         setLoading(true);
@@ -63,6 +68,14 @@ export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) =>
     const deleteAthlete = async (id: string) => {
         await axios.delete(`${apiUrl}/athlete/delete/${id}`);
         setAthletes(prev => prev.filter(a => a._id !== id));
+    };
+
+    const setAthleteArchived = async (id: string, archived: boolean) => {
+        const response = await axios.put(`${apiUrl}/athlete/archive/${id}`, { archived });
+        setAthletes(prev =>
+            prev.map(a => (a._id === id ? response.data : a))
+        );
+        return response.data;
     };
 
     useEffect(() => {
@@ -102,12 +115,14 @@ export const AthleteProvider: React.FC<AthleteProviderProps> = ({ children }) =>
         <AthleteContext.Provider
             value={{
                 athletes,
+                archivedAthletes,
                 loading,
                 error,
                 addAthlete,
                 getAthlete,
                 editAthlete,
                 deleteAthlete,
+                setAthleteArchived,
                 getAllAthletes,
                 noMedicalCertificateAthleteList,
                 expiredMedicalCertificateAthleteList,

@@ -32,7 +32,8 @@ export interface Athlete {
     ensuranceExp: Date,
     ensuranceStartDate: string,
     whatsappConsent: boolean,
-    whatsappConsentDate: Date
+    whatsappConsentDate: Date,
+    archived?: boolean
 }
 
 export interface Subscription {

@@ -46,7 +46,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   const [packsCount, setPacksCount] = useState<number>(0);
   const [expiredSubscriptionsList, setExpiredSubscriptionsList] = useState<ExpiredSubscriptionDetail[]>([]);
 
-  const { athletes } = useAthleteContext();
+  const { athletes, archivedAthletes } = useAthleteContext();
+
+  const archivedAthleteIds = new Set(archivedAthletes.map(a => a._id));
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const today = new Date();
@@ -130,7 +132,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     const quarterlyCount = subscriptions.filter(s => s.type === 'quarterly' && new Date(s.subscriptionExp) > now).length;
     const semesterlyCount = subscriptions.filter(s => s.type === 'sixmonth' && new Date(s.subscriptionExp) > now).length;
     const packsCount = subscriptions.filter(s => s.type === '10entrance').length;
-    const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now);
+    const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now && !archivedAthleteIds.has(s.athleteId));
     const monthEarn = subscriptions
       .filter(s => {
         const created = new Date(s.createdAt || '');
@@ -145,7 +147,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     setExpiredSubscriptionsCount(expired.length);
     setMonthEarning(monthEarn);
     getExpiredSubscriptionslist();
-  }, [subscriptions, athletes, currentMonth]);
+  }, [subscriptions, athletes, archivedAthletes, currentMonth]);
 
   useEffect(() => {
     getAllSubscriptions();
@@ -170,7 +172,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     if (!subscriptions || subscriptions.length === 0) return undefined;
 
     if (athletes) {
-      const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now);
+      const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now && !archivedAthleteIds.has(s.athleteId));
 
       const expiredDetails = expired.map(s => {
         const diffTime = now.getTime() - new Date(s.subscriptionExp).getTime();
