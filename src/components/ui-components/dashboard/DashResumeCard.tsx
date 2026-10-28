@@ -19,7 +19,7 @@ export default function DashResumeCard(props: DashResumeCardProps) {
                 <p className="text-gray-500 text-base pt-2">{props.subtitle}</p>
             </div>
             <div>
-                <p className="text-4xl font-semibold">{props.count}</p>
+                <p className="text-3xl font-semibold">{props.count}</p>
             </div>
         </div>
     )

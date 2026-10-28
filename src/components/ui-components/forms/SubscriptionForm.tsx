@@ -270,7 +270,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                         <div className="pb-6">
                             <div className="flex items-center gap-8 pb-2">
                                 <FontAwesomeIcon icon={faUser} size="sm" />
-                                <p className="text-xl font-semibold text-gray-800">Atleta</p>
+                                <p className="text-lg font-semibold text-gray-800">Atleta</p>
                             </div>
                             <p className="text-md text-gray-400">Seleziona l'atleta per il nuovo abbonamento</p>
                         </div>
@@ -286,13 +286,13 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                         <div className="pb-6">
                             <div className="flex items-center gap-8 pb-2">
                                 <FontAwesomeIcon icon={faClock} size="sm" />
-                                <p className="text-xl font-semibold text-gray-800">Tipologia di Abbonamento</p>
+                                <p className="text-lg font-semibold text-gray-800">Tipologia di Abbonamento</p>
                             </div>
                             <p className="text-md text-gray-400">Configura il tipo e la durata dell'abbonamento</p>
                         </div>
                         {!values.athleteId && (
                             <div className="mb-4">
-                                <label className="block text-base font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-semibold text-gray-700 pb-1 mb-1">
                                     Tipologia di Abbonamento
                                     <span className="text-black ml-1">*</span>
                                 </label>
@@ -316,7 +316,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                         <div className="pb-6">
                             <div className="flex items-center gap-8 pb-2">
                                 <FontAwesomeIcon icon={faCalendar} size="sm" />
-                                <p className="text-xl font-semibold text-gray-800">Periodo e Prezzo</p>
+                                <p className="text-lg font-semibold text-gray-800">Periodo e Prezzo</p>
                             </div>
                             <p className="text-md text-gray-400">Definisci le date e il prezzo dell'abbonamento</p>
                         </div>
@@ -328,7 +328,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                                 onChange={handleFieldChange}
                             />
                             <div>
-                                <p className="block text-base pb-1 font-medium text-gray-700 mb-1">Data Scadenza</p>
+                                <p className="block text-xs font-semibold pb-1 text-gray-700 mb-1">Data Scadenza</p>
                                 <div className="w-full p-3 border rounded-xl text-sm text-gray-500 border-gray-300 bg-gray-50">
                                     <p>{values.date && values.type ? formatDate(getSubscriptionExpFromStartDate(values.date, values.type)) : '...'}</p>
                                 </div>
@@ -336,13 +336,13 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                         </div>
                         <div className="grid grid-cols-3 gap-6">
                             <div>
-                                <p className="block text-base pb-1 font-medium text-gray-700 mb-1">Prezzo Base</p>
+                                <p className="block text-xs font-semibold pb-1 text-gray-700 mb-1">Prezzo Base</p>
                                 <div className="w-full p-3 border rounded-xl text-sm text-gray-500 border-gray-300 bg-gray-50">
                                     <p>{values.amount ? `${values.amount} €` : '0 €'}</p>
                                 </div>
                             </div>
                             <div>
-                                <p className="block text-base pb-1 font-medium text-gray-700 mb-1">Sconto (%)</p>
+                                <p className="block text-xs font-semibold pb-1 text-gray-700 mb-1">Sconto (%)</p>
                                 <input
                                     type="number"
                                     className="w-full p-3 border rounded-xl text-sm text-gray-500 border-gray-300"
@@ -373,7 +373,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                         <div className="pb-6">
                             <div className="flex items-center gap-8 pb-2">
                                 <FontAwesomeIcon icon={faEuro} size="sm" />
-                                <p className="text-xl font-semibold text-gray-800">Pagamento</p>
+                                <p className="text-lg font-semibold text-gray-800">Pagamento</p>
                             </div>
                             <p className="text-md text-gray-400">Informazioni sul pagamento dell'abbonamento</p>
                         </div>
@@ -390,7 +390,7 @@ export default function SubscriptionForm({ subscriptionId, mode = 'create' }: Su
                         <div className="pb-6">
                             <div className="flex items-center gap-8 pb-2">
                                 <FontAwesomeIcon icon={faPencil} size="sm" />
-                                <p className="text-xl font-semibold text-gray-800">Note aggiuntive</p>
+                                <p className="text-lg font-semibold text-gray-800">Note aggiuntive</p>
                             </div>
                             <p className="text-md text-gray-400">Aggiungi informazioni su questo abbonamento (opzionale)</p>
                         </div>

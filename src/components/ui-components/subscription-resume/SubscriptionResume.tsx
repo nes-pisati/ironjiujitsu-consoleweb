@@ -10,7 +10,7 @@ export default function SubscriptionResume(props: SubscriptionStatsCardProps) {
     return (
         <div className="w-auto rounded-2xl h-60 border border-gray-400 bg-gray-200 p-7 flex flex-col justify-between">
             <div>
-                <p className="text-xl font-semibold">Riepilogo Abbonamento</p>
+                <p className="text-lg font-semibold">Riepilogo Abbonamento</p>
             </div>
             <div>
                 <div className="flex justify-between mb-2">

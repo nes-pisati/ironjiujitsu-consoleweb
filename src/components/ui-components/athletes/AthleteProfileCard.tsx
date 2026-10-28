@@ -18,7 +18,7 @@ export default function AthleteProfileCard(props: AthleteProfileProps) {
             <div>
                 <div className="flex items-center gap-10">
                     <FontAwesomeIcon icon={props.icon} size="lg" />
-                    <p className="text-xl font-semibold">{props.title}</p>
+                    <p className="text-lg font-semibold">{props.title}</p>
                 </div>
                 <div>
                     {props.children}

@@ -45,8 +45,8 @@ export default function Dashboard() {
                 <div className="py-7 grid grid-cols-4 gap-5">
                     <DashResumeCard title="Atleti" icon={faUser} subtitle="Numero totale di atleti iscritti" count={athletes.length} />
                     <DashResumeCard title="Abbonamenti" icon={faCreditCard} subtitle="Abbonamenti attivi" count={subscriptions.length} />
-                    <div className="w-auto rounded-2xl h-60 border border-gray-300 p-7 flex flex-col justify-between col-span-2">
-                        <div className="pb-10">
+                    <div className="w-auto rounded-2xl min-h-60 border border-gray-300 p-7 flex flex-col justify-between col-span-2">
+                        <div className="pb-6">
                             <div className="flex flex-col justify-between">
                                 <p className="text-l font-semibold">Azioni rapide</p>
                                 <p className="text-gray-500 text-base pt-2">Gestisci velocemente le operazioni più comuni</p>
@@ -69,7 +69,7 @@ export default function Dashboard() {
                         <div>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faTriangleExclamation} size="lg" color="red" />
-                                <p className="text-2xl font-semibold">Allerte prioritarie abbonamenti</p>
+                                <p className="text-lg font-semibold">Allerte prioritarie abbonamenti</p>
                             </div>
                             <p className="text-gray-500 text-base pt-2 mb-3">Alcuni abbonamenti sono in scadenza</p>
                             <div className="overflow-y-scroll h-95 pb-6">
@@ -83,7 +83,7 @@ export default function Dashboard() {
                         <div>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faStethoscope} size="lg" color="black" />
-                                <p className="text-2xl font-semibold">Panoramica Certificati Medici</p>
+                                <p className="text-lg font-semibold">Panoramica Certificati Medici</p>
                             </div>
                             <p className="text-gray-500 text-base pt-2 mb-3">Lista atleti senza certificato o con certificato medico scaduto</p>
                             <div className="grid grid-cols-2 gap-2 pt-3">

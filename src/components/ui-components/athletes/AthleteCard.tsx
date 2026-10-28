@@ -118,7 +118,7 @@ export default function AthleteCard(props: Athlete) {
             <div className="border-b border-gray-300">
                 <div className="flex items-start justify-between">
                     <div className="pb-5">
-                        <p className="text-xl font-semibold pb-3">{props.name + ' ' + props.surname}</p>
+                        <p className="text-lg font-semibold pb-3">{props.name + ' ' + props.surname}</p>
                         <div className="flex items-center gap-5">
                             <p className="text-base text-gray-500">{getAthleteAge(props.birthDate) + ' anni'}</p>
                             <div className="flex items-center gap-2">

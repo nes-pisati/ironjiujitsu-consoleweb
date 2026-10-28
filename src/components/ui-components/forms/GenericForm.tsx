@@ -218,7 +218,7 @@ export function ModularForm<T extends Record<string, any>>({
         type="button"
         onClick={handleSubmit}
         disabled={isSubmitting}
-        className="w-full bg-black text-white text-xl font-semibold py-4 px-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-8 hover:cursor-pointer"
+        className="w-full bg-black text-white text-base font-semibold py-3 px-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-8 hover:cursor-pointer"
       >
         <FontAwesomeIcon icon={faSave} size='lg'/>
         {isSubmitting ? 'Invio...' : submitLabel}
