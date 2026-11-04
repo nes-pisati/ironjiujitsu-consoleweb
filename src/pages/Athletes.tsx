@@ -10,6 +10,7 @@ import { faGrip, faList, faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSubscriptionContext } from "../context/SubscriptionsContext";
 import * as XLSX from "xlsx";
+import { getBeltTranslation } from "../utils";
 
 type DisplayType = 'list' | 'grid'
 
@@ -73,6 +74,10 @@ export default function AthletesList({ archived = false }: AthletesListProps) {
                 'Cognome': athlete.surname,
                 'Data di nascita': athlete.birthDate ? new Date(athlete.birthDate).toLocaleDateString('it-IT') : '',
                 'Codice fiscale': athlete.fiscalCode,
+                'Cintura': getBeltTranslation(athlete.belt),
+                'Data conseguimento cintura': athlete.beltDate ? new Date(athlete.beltDate).toLocaleDateString('it-IT') : '',
+                'Affiliazione UIJJ': athlete.uijjAffiliated ? 'Sì' : 'No',
+                'Data affiliazione UIJJ': athlete.uijjAffiliationDate ? new Date(athlete.uijjAffiliationDate).toLocaleDateString('it-IT') : '',
                 'Tipo abbonamento': sub ? (subscriptionTypeLabel[sub.type] ?? sub.type) : '',
                 'Scadenza abbonamento': sub?.subscriptionExp ? new Date(sub.subscriptionExp).toLocaleDateString('it-IT') : '',
                 'Costo abbonamento (€)': sub?.amount ?? '',
@@ -85,6 +90,10 @@ export default function AthletesList({ archived = false }: AthletesListProps) {
             { wch: 20 }, // Cognome
             { wch: 18 }, // Data di nascita
             { wch: 20 }, // Codice fiscale
+            { wch: 16 },
+            { wch: 28 },
+            { wch: 18 },
+            { wch: 24 },
             { wch: 18 }, // Tipo abbonamento
             { wch: 24 }, // Scadenza abbonamento
             { wch: 22 }, // Costo abbonamento
