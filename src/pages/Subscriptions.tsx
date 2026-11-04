@@ -22,10 +22,10 @@ export default function Subscriptions() {
           <button className="bg-black  text-white text-sm font-bold py-4 px-6 rounded-2xl" onClick={() => handleNavigate()}>Nuovo Abbonamento</button>
         </div>
         <div className="py-10 grid grid-cols-4 gap-5">
-          <SubscriptionStatsCard title="Abbonamenti Mensili Attivi" icon={faUsers} count={monthlySubscriptionsCount} subtitle="Mensili di questo mese" />
-          <SubscriptionStatsCard title="Abbonamenti Trimestrali Attivi" icon={faUsers} count={quarterlySubscriptionsCount} subtitle="Trimestrali di questo mese" />
-          <SubscriptionStatsCard title="Abbonamenti Semestrali Attivi" icon={faUsers} count={semesterlySubscriptionsCount} subtitle="Semestrali di questo mese" />
-          <SubscriptionStatsCard title="Pacchetti Ingressi" icon={faUsers} count={packsCount} subtitle="Pacchetti ingressi del mese" />
+          <SubscriptionStatsCard title="Abbonamenti Mensili Attivi" icon={faUsers} count={monthlySubscriptionsCount} subtitle="Attualmente attivi" />
+          <SubscriptionStatsCard title="Abbonamenti Trimestrali Attivi" icon={faUsers} count={quarterlySubscriptionsCount} subtitle="Attualmente attivi" />
+          <SubscriptionStatsCard title="Abbonamenti Semestrali Attivi" icon={faUsers} count={semesterlySubscriptionsCount} subtitle="Attualmente attivi" />
+          <SubscriptionStatsCard title="Pacchetti Ingressi" icon={faUsers} count={packsCount} subtitle="Attualmente attivi" />
         </div>
         <div className="grid grid-cols-2 gap-5">
           <SubscriptionStatsCard title="Abbonamenti Scaduti" icon={faCalendar} count={expiredSubscriptionsCount} subtitle="Da rinnovare" textColor="text-red-600" />

@@ -9,7 +9,7 @@ import { faArrowLeft, faBoxArchive, faBirthdayCake, faCreditCard, faEnvelope, fa
 import AthleteProfileCard from "../components/ui-components/athletes/AthleteProfileCard";
 import StateLabel from "../components/ui-components/label/StateLabel";
 import AlertDialog from "../components/ui-components/dialog-alert/DialogAlert";
-import { formatDate, getAthleteAge, getBeltColour, getBeltTranslation, t } from "../utils";
+import { formatDate, getAthleteAge, getBeltColour, getBeltTextColour, getBeltTranslation, getYearsAgoLabel, t } from "../utils";
 
 type AlertDialogProps = {
   title: string;
@@ -131,6 +131,11 @@ export default function AthleteProfile() {
                     <p className="text-base font-medium">{"Cintura " + getBeltTranslation(athlete.belt)}</p>
                     <p className="text-base text-gray-500">{getAthleteAge(new Date(athlete.birthDate)) + " anni"}</p>
                   </div>
+                  {athlete.uijjAffiliated && (
+                    <p className={`${getBeltColour(athlete.belt, "w-fit", "")} ${getBeltTextColour(athlete.belt)} ml-auto px-3 py-1 text-xs font-medium whitespace-nowrap`}>
+                      Atleta UIJJ
+                    </p>
+                  )}
                 </div>
 
                 <div className="py-12">
@@ -153,6 +158,22 @@ export default function AthleteProfile() {
                     </div>
                   )}
                 </div>
+
+                {(athlete.beltDate || athlete.uijjAffiliationDate) && (
+                  <div className="pt-6 border-t border-gray-300">
+                    <p className="font-semibold text-sm pb-2">Ulteriori informazioni</p>
+                    {athlete.beltDate && (
+                      <p className="text-sm">
+                        {`Cintura conseguita il: ${formatDate(new Date(athlete.beltDate))} (${getYearsAgoLabel(athlete.beltDate)})`}
+                      </p>
+                    )}
+                    {athlete.uijjAffiliationDate && (
+                      <p className="text-sm">
+                        {`Tesseramento UIJJ del: ${formatDate(new Date(athlete.uijjAffiliationDate))}`}
+                      </p>
+                    )}
+                  </div>
+                )}
               </AthleteProfileCard>
 
               {/* ABBONAMENTO */}

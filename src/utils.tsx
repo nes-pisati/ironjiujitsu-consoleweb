@@ -41,6 +41,21 @@ export const getBeltColour = (belt: AllBelts, width: string, height: string): st
     return [bgClass, baseClass, width, height, borderClass].filter(Boolean).join(' ');
 };
 
+export const getBeltTextColour = (belt: AllBelts): string => {
+    const darkBelts: AllBelts[] = ['blue', 'purple', 'brown', 'black', 'greyblack', 'yellowblack', 'orangeblack', 'greenblack'];
+
+    return darkBelts.includes(belt) ? 'text-white' : 'text-black';
+};
+
+export const getYearsAgoLabel = (date: string | Date): string => {
+    const millisecondsInYear = 365.25 * 24 * 60 * 60 * 1000;
+    const years = Math.round((Date.now() - new Date(date).getTime()) / millisecondsInYear);
+
+    if (years === 0) return 'meno di un anno fa';
+
+    return years === 1 ? '1 anno fa' : `${years} anni fa`;
+};
+
 export const getBeltTranslation = (belt: AllBelts) => {
     const beltColors: Record<AllBelts, string> = {
         white: 'Bianca',

@@ -1,10 +1,11 @@
-import { createContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Subscription } from "../types";
 import axios from "axios";
 import React from "react";
 import { useAthleteContext } from "./AthleteContext";
 
 export interface ExpiredSubscriptionDetail {
+  subscriptionId: string;
   athleteName: string;
   daysExpired: number;
 }
@@ -22,6 +23,7 @@ interface SubscriptionsContextType {
   quarterlySubscriptionsCount: number;
   semesterlySubscriptionsCount: number;
   packsCount: number;
+  activeSubscriptionsCount: number;
   monthEarning: number;
   expiredSubscriptionsCount: number;
   getSubscriptionById: (id: string) => Promise<Subscription | null>;
@@ -44,7 +46,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   const [quarterlySubscriptionsCount, setQuarterlySubscriptionsCount] = useState<number>(0);
   const [semesterlySubscriptionsCount, setSemesterlySubscriptionsCount] = useState<number>(0);
   const [packsCount, setPacksCount] = useState<number>(0);
-  const [expiredSubscriptionsList, setExpiredSubscriptionsList] = useState<ExpiredSubscriptionDetail[]>([]);
+  const [activeSubscriptionsCount, setActiveSubscriptionsCount] = useState<number>(0);
 
   const { athletes, archivedAthletes } = useAthleteContext();
 
@@ -128,10 +130,11 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   useEffect(() => {
     if (!subscriptions || subscriptions.length === 0) return;
 
-    const monthlyCount = subscriptions.filter(s => s.type === 'month' && new Date(s.subscriptionExp) > now).length;
-    const quarterlyCount = subscriptions.filter(s => s.type === 'quarterly' && new Date(s.subscriptionExp) > now).length;
-    const semesterlyCount = subscriptions.filter(s => s.type === 'sixmonth' && new Date(s.subscriptionExp) > now).length;
-    const packsCount = subscriptions.filter(s => s.type === '10entrance').length;
+    const activeSubscriptions = subscriptions.filter(s => new Date(s.subscriptionExp) > now && !archivedAthleteIds.has(s.athleteId));
+    const monthlyCount = activeSubscriptions.filter(s => s.type === 'month').length;
+    const quarterlyCount = activeSubscriptions.filter(s => s.type === 'quarterly').length;
+    const semesterlyCount = activeSubscriptions.filter(s => s.type === 'sixmonth').length;
+    const packsCount = activeSubscriptions.filter(s => s.type === '10entrance').length;
     const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now && !archivedAthleteIds.has(s.athleteId));
     const monthEarn = subscriptions
       .filter(s => {
@@ -144,9 +147,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     setQuarterlySubscriptionsCount(quarterlyCount);
     setSemesterlySubscriptionsCount(semesterlyCount);
     setPacksCount(packsCount);
+    setActiveSubscriptionsCount(monthlyCount + quarterlyCount + semesterlyCount + packsCount);
     setExpiredSubscriptionsCount(expired.length);
     setMonthEarning(monthEarn);
-    getExpiredSubscriptionslist();
   }, [subscriptions, athletes, archivedAthletes, currentMonth]);
 
   useEffect(() => {
@@ -168,31 +171,24 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     }
   };
 
-  const getExpiredSubscriptionslist = async (): Promise<ExpiredSubscriptionDetail[] | undefined> => {
-    if (!subscriptions || subscriptions.length === 0) return undefined;
+  const expiredSubscriptionsList = useMemo<ExpiredSubscriptionDetail[]>(() => {
+    const now = new Date();
+    const archivedIds = new Set(archivedAthletes.map(a => a._id));
+    const athletesById = new Map(athletes.map(a => [a._id, a]));
 
-    if (athletes) {
-      const expired = subscriptions.filter(s => new Date(s.subscriptionExp) < now && !archivedAthleteIds.has(s.athleteId));
-
-      const expiredDetails = expired.map(s => {
+    return subscriptions
+      .filter(s => new Date(s.subscriptionExp) < now && !archivedIds.has(s.athleteId))
+      .map(s => {
         const diffTime = now.getTime() - new Date(s.subscriptionExp).getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        const athlete = athletes.find(a => a._id === s.athleteId);
-
-        const athleteName = athlete ? `${athlete.name} ${athlete.surname}` : 'Unknown Athlete';
+        const athlete = athletesById.get(s.athleteId);
 
         return {
-          athleteName,
-          daysExpired: diffDays
+          subscriptionId: s._id,
+          athleteName: athlete ? `${athlete.name} ${athlete.surname}` : 'Unknown Athlete',
+          daysExpired: Math.ceil(diffTime / (1000 * 60 * 60 * 24))
         };
       });
-
-      setExpiredSubscriptionsList(expiredDetails);
-      return expiredDetails;
-    }
-
-  };
+  }, [subscriptions, athletes, archivedAthletes]);
 
   return (
     <SubscriptionContext.Provider value={{
@@ -210,6 +206,7 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
       quarterlySubscriptionsCount,
       semesterlySubscriptionsCount,
       packsCount,
+      activeSubscriptionsCount,
       getSubscriptionById,
       expiredSubscriptionsList
     }}>

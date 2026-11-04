@@ -18,7 +18,7 @@ type MedicalCertificateStatusType = typeof MedicalCertificateStatus[keyof typeof
 export default function Dashboard() {
 
     const { athletes, noMedicalCertificateAthleteList, expiredMedicalCertificateAthleteList } = useAthleteContext();
-    const { subscriptions, expiredSubscriptionsList } = useSubscriptionContext();
+    const { activeSubscriptionsCount, expiredSubscriptionsList } = useSubscriptionContext();
     const navigate = useNavigate();
 
     const token = localStorage.getItem('creatorLogin')
@@ -44,7 +44,7 @@ export default function Dashboard() {
                 <PageTitle title="Dashboard" subtitle="Panoramica generale" btnVisible={false} />
                 <div className="py-7 grid grid-cols-4 gap-5">
                     <DashResumeCard title="Atleti" icon={faUser} subtitle="Numero totale di atleti iscritti" count={athletes.length} />
-                    <DashResumeCard title="Abbonamenti" icon={faCreditCard} subtitle="Abbonamenti attivi" count={subscriptions.length} />
+                    <DashResumeCard title="Abbonamenti" icon={faCreditCard} subtitle="Abbonamenti attivi" count={activeSubscriptionsCount} />
                     <div className="w-auto rounded-2xl min-h-60 border border-gray-300 p-7 flex flex-col justify-between col-span-2">
                         <div className="pb-6">
                             <div className="flex flex-col justify-between">
@@ -74,7 +74,7 @@ export default function Dashboard() {
                             <p className="text-gray-500 text-base pt-2 mb-3">Alcuni abbonamenti sono in scadenza</p>
                             <div className="overflow-y-scroll h-95 pb-6">
                                 {expiredSubscriptionsList.map((subscription) => (
-                                    <DashAlertCard key={subscription.athleteName} title="Abbonamento scaduto" athleteName={subscription.athleteName} isError={true} labelText={`${subscription.daysExpired} giorni fa`} />
+                                    <DashAlertCard key={subscription.subscriptionId} title="Abbonamento scaduto" athleteName={subscription.athleteName} isError={true} labelText={`${subscription.daysExpired} giorni fa`} />
                                 ))}
                             </div>
                         </div>
