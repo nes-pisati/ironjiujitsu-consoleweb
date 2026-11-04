@@ -33,7 +33,7 @@ export interface Athlete {
     ensurance: boolean,
     ensuranceType: EnsuranceType,
     ensuranceExp: Date,
-    ensuranceStartDate: string,
+    renewEnsurance?: boolean,
     whatsappConsent: boolean,
     whatsappConsentDate: Date,
     archived?: boolean

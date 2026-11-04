@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileMedical, faPhone, faStethoscope, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useAthleteContext } from "../../../context/AthleteContext";
 import { useEffect, useState } from "react";
-import { calculateAge, formatFieldsDate, getTypeFromAge } from "../../../utils";
+import { calculateAge, formatFieldsDate, getTypeFromAge, t } from "../../../utils";
 import Alert, { type AlertProps } from "../alert/Alert";
 
 
@@ -54,10 +54,6 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       const fetchData = async () => {
         const data = await loadAthleteData(athleteId);
         if (data) {
-          // const formattedBirthday = formatFieldsDate(data.birthDate)
-          // const formattedMedicalCertificateStartDate = formatFieldsDate(data.medicalCertificateReleaseDate);
-          // const formattedEnsuranceStartDate = formatFieldsDate(data.ensuranceStartDate)
-          // setAthleteData({ ...data, birthDate: formattedBirthday, medicalCertificateReleaseDate: formattedMedicalCertificateStartDate, ensuranceStartDate: formattedEnsuranceStartDate });
           setAthleteData(data)
           setError(null);
         } else {
@@ -107,8 +103,8 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
   ];
 
   const ensuranceOptions = [
-    { value: 'A', label: 'Tipologia A' },
-    { value: 'B', label: 'Tipologia B' }
+    { value: 'A', label: t('A') },
+    { value: 'B', label: t('B') }
   ]
 
   // const calculateExpiration = (date: Date): Date => {
@@ -142,7 +138,6 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
 
       const formattedBirthDay = formatFieldsDate(values.birthDate);
       const formattedMedicalCertificateStartDate = values.medicalCertificateReleaseDate ? formatFieldsDate(values.medicalCertificateReleaseDate) : null
-      const formattedEnsuranceStartDate = formatFieldsDate(values.ensuranceStartDate)
       const formattedBeltDate = values.beltDate ? formatFieldsDate(values.beltDate) : null
       const formattedUijjAffiliationDate = values.uijjAffiliationDate ? formatFieldsDate(values.uijjAffiliationDate) : null
 
@@ -155,7 +150,6 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
           beltDate: formattedBeltDate,
           uijjAffiliationDate: formattedUijjAffiliationDate,
           ensurance: true,
-          ensuranceStartDate: formattedEnsuranceStartDate,
           medicalCertificate: medicalCertificate,
           medicalCertificateReleaseDate: formattedMedicalCertificateStartDate,
           email: email,
@@ -229,6 +223,8 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       ...beltFieldConfig,
       options: getBeltOptions()
     } : null;
+
+    const isEnsuranceExpired = Boolean(values.ensuranceExp) && new Date(values.ensuranceExp) < new Date();
 
     const handleFieldChange = (name: keyof Athlete, value: any) => {
       updateValue(name, value);
@@ -417,13 +413,14 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
               error={errors.ensuranceType}
               onChange={handleFieldChange}
             />
-            <Field
-              config={fields.find((f: any) => f.name === 'ensuranceStartDate')}
-              value={isEditMode ? formatFieldsDate(values.ensuranceStartDate) : values.ensuranceStartDate}
-              error={errors.ensuranceStartDate}
-              onChange={handleFieldChange}
-            />
-
+            {isEditMode && isEnsuranceExpired && (
+              <Field
+                config={fields.find((f: any) => f.name === 'renewEnsurance')}
+                value={values.renewEnsurance}
+                error={errors.renewEnsurance}
+                onChange={handleFieldChange}
+              />
+            )}
           </div>
         </div>
         {
@@ -538,10 +535,10 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       options: ensuranceOptions
     },
     {
-      name: 'ensuranceStartDate',
-      type: 'date',
-      label: 'Data attivazione assicurazione',
-      required: true
+      name: 'renewEnsurance',
+      type: 'checkbox',
+      label: 'Rinnova assicurazione',
+      required: false
     },
   ];
 

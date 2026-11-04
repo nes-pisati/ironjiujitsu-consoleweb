@@ -266,7 +266,7 @@ export default function AthleteProfile() {
                     </div>
                     <div className="flex justify-between">
                       <p className="text-base">Tipologia:</p>
-                      <p className="text-base">{athlete.ensuranceType}</p>
+                      <p className="text-base">{t(athlete.ensuranceType)}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-base">Data scadenza:</p>
