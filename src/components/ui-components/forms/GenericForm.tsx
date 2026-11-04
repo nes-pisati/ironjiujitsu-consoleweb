@@ -87,6 +87,11 @@ interface FieldProps<T> {
 
 function Field<T>({ config, value, error, onChange, className = '' }: FieldProps<T>) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    if (config.type === 'checkbox') {
+      onChange(config.name, (e.target as HTMLInputElement).checked);
+      return;
+    }
+
     const newValue = config.type === 'number' ? Number(e.target.value) : e.target.value;
     onChange(config.name, newValue);
   };
@@ -125,7 +130,7 @@ function Field<T>({ config, value, error, onChange, className = '' }: FieldProps
             ))}
           </select>
         );
-      
+
       default:
         return (
           <input
@@ -139,6 +144,26 @@ function Field<T>({ config, value, error, onChange, className = '' }: FieldProps
         );
     }
   };
+
+  if (config.type === 'checkbox') {
+    return (
+      <div className={`mb-4 ${className}`}>
+        <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 hover:cursor-pointer">
+          <input
+            type="checkbox"
+            checked={Boolean(value)}
+            onChange={handleChange}
+            className="w-4 h-4 accent-black hover:cursor-pointer"
+          />
+          {config.label}
+          {config.required && <span className="text-black">*</span>}
+        </label>
+        {error && (
+          <p className="mt-1 text-sm text-red-600">{error}</p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={`mb-4 ${className}`}>

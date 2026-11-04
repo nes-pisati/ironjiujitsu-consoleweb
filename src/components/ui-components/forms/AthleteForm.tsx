@@ -143,6 +143,8 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       const formattedBirthDay = formatFieldsDate(values.birthDate);
       const formattedMedicalCertificateStartDate = values.medicalCertificateReleaseDate ? formatFieldsDate(values.medicalCertificateReleaseDate) : null
       const formattedEnsuranceStartDate = formatFieldsDate(values.ensuranceStartDate)
+      const formattedBeltDate = values.beltDate ? formatFieldsDate(values.beltDate) : null
+      const formattedUijjAffiliationDate = values.uijjAffiliationDate ? formatFieldsDate(values.uijjAffiliationDate) : null
 
       if (isEditMode) {
         const { ensuranceExp, medicalCertificateExp, ...rest } = values;
@@ -150,6 +152,8 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
         await editAthlete(athleteId!, {
           ...rest,
           birthDate: formattedBirthDay,
+          beltDate: formattedBeltDate,
+          uijjAffiliationDate: formattedUijjAffiliationDate,
           ensurance: true,
           ensuranceStartDate: formattedEnsuranceStartDate,
           medicalCertificate: medicalCertificate,
@@ -171,6 +175,8 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       else {
         await addAthlete({
           ...values,
+          beltDate: formattedBeltDate,
+          uijjAffiliationDate: formattedUijjAffiliationDate,
           ensurance: true,
           medicalCertificate: medicalCertificate,
           email: email,
@@ -233,10 +239,20 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
         updateValue('type', newType);
 
         updateValue('belt', '');
+        updateValue('beltDate', null);
       }
 
       if (name === 'type') {
         updateValue('belt', '');
+        updateValue('beltDate', null);
+      }
+
+      if (name === 'belt') {
+        updateValue('beltDate', null);
+      }
+
+      if (name === 'uijjAffiliated' && !value) {
+        updateValue('uijjAffiliationDate', null);
       }
 
     };
@@ -295,26 +311,55 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
               onChange={handleFieldChange}
             />
 
-            {dynamicBeltField && values.type && (
+            <div className={`grid gap-6 ${values.belt ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              {dynamicBeltField && values.type && (
+                <Field
+                  config={dynamicBeltField}
+                  value={values.belt}
+                  error={errors.belt}
+                  onChange={handleFieldChange}
+                />
+              )}
+
+              {!values.type && (
+                <div className="mb-4">
+                  <label className="block text-xs font-semibold text-gray-700 pb-1 mb-1">
+                    Cintura
+                    <span className="text-black ml-1">*</span>
+                  </label>
+                  <div className="w-full text-sm p-3 border border-gray-300 rounded-xl bg-gray-100 text-gray-500">
+                    Seleziona prima la tipologia
+                  </div>
+                </div>
+              )}
+
+              {values.belt && (
+                <Field
+                  config={fields.find((f: any) => f.name === 'beltDate')}
+                  value={isEditMode && values.beltDate ? formatFieldsDate(values.beltDate) : values.beltDate}
+                  error={errors.beltDate}
+                  onChange={handleFieldChange}
+                />
+              )}
+            </div>
+
+            <div className="mt-2 pt-6 border-t border-gray-300 grid grid-cols-2 gap-6 items-center">
               <Field
-                config={dynamicBeltField}
-                value={values.belt}
-                error={errors.belt}
+                config={fields.find((f: any) => f.name === 'uijjAffiliated')}
+                value={values.uijjAffiliated}
+                error={errors.uijjAffiliated}
                 onChange={handleFieldChange}
               />
-            )}
 
-            {!values.type && (
-              <div className="mb-4">
-                <label className="block text-xs font-semibold text-gray-700 pb-1 mb-1">
-                  Cintura
-                  <span className="text-black ml-1">*</span>
-                </label>
-                <div className="w-full text-sm p-3 border border-gray-300 rounded-xl bg-gray-100 text-gray-500">
-                  Seleziona prima la tipologia
-                </div>
-              </div>
-            )}
+              {values.uijjAffiliated && (
+                <Field
+                  config={fields.find((f: any) => f.name === 'uijjAffiliationDate')}
+                  value={isEditMode && values.uijjAffiliationDate ? formatFieldsDate(values.uijjAffiliationDate) : values.uijjAffiliationDate}
+                  error={errors.uijjAffiliationDate}
+                  onChange={handleFieldChange}
+                />
+              )}
+            </div>
           </div>
           <div className="border p-8 border-gray-300 rounded-2xl">
             <div className="pb-6">
@@ -442,6 +487,26 @@ export default function AthleteForm({ athleteId, mode = 'create' }: AthleteFormP
       label: 'Cintura',
       required: true,
       options: []
+    },
+    {
+      name: 'beltDate',
+      type: 'date',
+      label: 'Data conseguimento cintura',
+      required: false,
+      validation: (value: string) => new Date(value) > new Date() ? 'Data inserita non valida' : undefined
+    },
+    {
+      name: 'uijjAffiliated',
+      type: 'checkbox',
+      label: 'Atleta tesserato UIJJ',
+      required: false
+    },
+    {
+      name: 'uijjAffiliationDate',
+      type: 'date',
+      label: 'Data tesseramento UIJJ',
+      required: false,
+      validation: (value: string) => new Date(value) > new Date() ? 'Data inserita non valida' : undefined
     },
     {
       name: 'email',
