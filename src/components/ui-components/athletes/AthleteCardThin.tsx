@@ -1,10 +1,11 @@
-import { faEye, faStethoscope, faCreditCard, faFileMedical } from "@fortawesome/free-solid-svg-icons";
+import { faStethoscope, faCreditCard, faFileMedical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { AdultBelts, Athlete, KidsBelts } from "../../../types";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSubscriptionContext } from "../../../context/SubscriptionsContext";
 import { useAthleteContext } from "../../../context/AthleteContext";
+import { formatDate, getBeltColour, getBeltTextColour } from "../../../utils";
 
 
 export default function AthleteCardThin(props: Athlete & { showRestore?: boolean }) {
@@ -63,40 +64,6 @@ export default function AthleteCardThin(props: Athlete & { showRestore?: boolean
 
     type AllBelts = AdultBelts | KidsBelts;
 
-    const getBeltColour = (belt: AllBelts): string => {
-        const baseClasses = 'w-3 h-3 rounded-4xl';
-
-        const beltColors: Record<AllBelts, string> = {
-            white: 'bg-white',
-            blue: 'bg-blue-600',
-            purple: 'bg-purple-600',
-            brown: 'bg-amber-900',
-            black: 'bg-black',
-
-            greywhite: 'bg-gray-100',
-            grey: 'bg-gray-400',
-            greyblack: 'bg-gray-700',
-
-            yellowwhite: 'bg-yellow-100',
-            yellow: 'bg-yellow-400',
-            yellowblack: 'bg-yellow-700',
-
-            orangewhite: 'bg-orange-200',
-            orange: 'bg-orange-500',
-            orangeblack: 'bg-orange-800',
-
-            greenwhite: 'bg-green-200',
-            green: 'bg-green-500',
-            greenblack: 'bg-green-800',
-        };
-
-        const bgClass = beltColors[belt]
-
-        const borderClass = belt === 'white' ? 'border border-black' : '';
-
-        return `${bgClass} ${baseClasses} ${borderClass}`.trim();
-    };
-
     const getBeltTranslation = (belt: AllBelts) => {
         const beltColors: Record<AllBelts, string> = {
             white: 'Bianca',
@@ -138,47 +105,64 @@ export default function AthleteCardThin(props: Athlete & { showRestore?: boolean
     }
 
     return (
-        <div className="w-auto rounded-2xl border border-gray-300 py-4 px-6 flex items-center justify-between">
-            <div>
-                {/* */}
-                <p className="text-lg font-semibold pb-1">{props.name + ' ' + props.surname} </p>
-                <div className="flex items-center gap-5">
-                    <p className="text-base text-gray-500">{getAthleteAge(props.birthDate) + ' anni'}</p>
-                    <div className="flex items-center gap-2">
-                        <div className={getBeltColour(props.belt)}></div>
-                        <p className="text-base text-gray-500">{getBeltTranslation(props.belt)}</p>
+        <div
+            role="link"
+            tabIndex={0}
+            className="w-auto rounded-2xl border border-gray-300 py-4 px-6 cursor-pointer transition-all duration-100 ease-in hover:ring-1 hover:ring-gray-300 hover:bg-gray-50"
+            onClick={() => handleNavigate(props._id)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target === e.currentTarget) handleNavigate(props._id);
+            }}
+        >
+            <div className="flex items-center justify-between">
+                <div>
+                    <div className="flex items-center gap-4 pb-1">
+                        <p className="text-lg font-semibold">{props.name + ' ' + props.surname}</p>
+                        {props.uijjAffiliated && (
+                            <p className={`${getBeltColour(props.belt, "w-fit", "")} ${getBeltTextColour(props.belt)} shrink-0 px-3 py-1 text-xs font-medium whitespace-nowrap`}>
+                                UIJJ
+                            </p>
+                        )}
                     </div>
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                        <p className="text-base text-gray-500">{getAthleteAge(props.birthDate) + ' anni'}</p>
+                        <div className="flex items-center gap-2">
+                            <div className={`${getBeltColour(props.belt, "w-3", "h-3")} shrink-0`}></div>
+                            <p className="text-base text-gray-500">
+                                {getBeltTranslation(props.belt)}
+                                {props.beltDate && ` dal ${formatDate(new Date(props.beltDate))}`}
+                            </p>
+                        </div>
+                    </div>
+                    {restoreError && <p className="pt-1 text-sm text-red-700">{restoreError}</p>}
                 </div>
-                {restoreError && <p className="pt-1 text-sm text-red-700">{restoreError}</p>}
-            </div>
-            <div className="flex items-center gap-2">
-                {(getMedicalStatus() !== 'ok') && (
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getMedicalStatus())}`}>
-                        <FontAwesomeIcon icon={faStethoscope} size="xs" color="white" />
-                    </div>
-                )}
-                {(getEnsuranceStatus() !== 'ok') && (
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getEnsuranceStatus())}`}>
-                        <FontAwesomeIcon icon={faFileMedical} size="xs" color="white" />
-                    </div>
-                )}
-                {(subExpDate !== undefined && getSubscriptionStatus() !== 'ok') && (
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getSubscriptionStatus())}`}>
-                        <FontAwesomeIcon icon={faCreditCard} size="xs" color="white" />
-                    </div>
-                )}
-                {props.showRestore &&
-                    <button
-                        className="border border-gray-400 rounded-xl py-1.5 px-3 text-sm font-semibold transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer"
-                        onClick={handleRestore}
-                    >
-                        Ripristina
-                    </button>
-                }
-                <div className="py-2 px-3 rounded-xl transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer">
-                    <button onClick={() => handleNavigate(props._id)}>
-                        <FontAwesomeIcon icon={faEye} size="sm" />
-                    </button>
+                <div className="flex items-center gap-2">
+                    {(getMedicalStatus() !== 'ok') && (
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getMedicalStatus())}`}>
+                            <FontAwesomeIcon icon={faStethoscope} size="xs" color="white" />
+                        </div>
+                    )}
+                    {(getEnsuranceStatus() !== 'ok') && (
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getEnsuranceStatus())}`}>
+                            <FontAwesomeIcon icon={faFileMedical} size="xs" color="white" />
+                        </div>
+                    )}
+                    {(subExpDate !== undefined && getSubscriptionStatus() !== 'ok') && (
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center ${getCircleBg(getSubscriptionStatus())}`}>
+                            <FontAwesomeIcon icon={faCreditCard} size="xs" color="white" />
+                        </div>
+                    )}
+                    {props.showRestore &&
+                        <button
+                            className="border border-gray-400 rounded-xl py-1.5 px-3 text-sm font-semibold transition-all duration-100 ease-in hover:bg-black hover:text-white hover:cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleRestore();
+                            }}
+                        >
+                            Ripristina
+                        </button>
+                    }
                 </div>
             </div>
         </div>
